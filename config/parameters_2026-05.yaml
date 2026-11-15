@@ -1,0 +1,155 @@
+# MSCI GIMI parameters used by the India Standard Index prediction model.
+#
+# Every number here traces to the MSCI Global Investable Market Indexes (GIMI)
+# Methodology, August 2026 edition, or the MSCI Liquidity Data Methodology (May 2025).
+# Section references are given so each value can be re-verified when MSCI updates.
+#
+# Sources:
+#   https://www.msci.com/eqb/methodology/meth_docs/MSCI_GIMIMethodology_Aug2026.pdf
+#   https://www.msci.com/documents/10199/995265d3-adce-42ce-dad7-a1696b3f800a  (Liquidity Data)
+
+market:
+  # India is an Emerging Market in the MSCI classification, so EM thresholds apply.
+  classification: EM
+  currency: INR
+  fx_ticker: "INR=X"          # yfinance: INR per 1 USD
+
+# ---------------------------------------------------------------------------
+# Equity Universe screens  (GIMI 2.2.3, 2.2.4)
+# ---------------------------------------------------------------------------
+equity_universe:
+  # Full market cap of the company at 99% cumulative free-float coverage of the
+  # DM Equity Universe. MSCI published USD 621 mn in the November 2026 methodology
+  # book (GIMI 2.2.3). Same value applies to DM and EM. Re-published every review.
+  min_size_usd_mn: 537.0
+  # GIMI 2.2.4 / 3.1.2.3: free-float market cap must be >= 50% of the above.
+  min_ffmc_fraction_of_min_size: 0.50
+
+# ---------------------------------------------------------------------------
+# Global Minimum Size Reference (GMSR)  (GIMI 2.3.2, 2.3.2.1)
+# ---------------------------------------------------------------------------
+# DM GMSR = full market cap of the DM Investable Equity Universe company at
+# 70% / 85% / 99% cumulative free-float coverage. EM GMSR is exactly one half of DM.
+# Values below are MSCI's published figures for the November 2026 review, in USD
+# millions. Refresh them every quarter with scripts/update_msci_parameters.py -
+# they moved 5-7% between the August and November 2026 editions.
+gmsr:
+  as_of: "2026-10-19"
+  published_at_review: "Nov 2026"
+  dm:
+    large_cap: 51345.0        # 70% coverage
+    standard: 15748.0         # 85% coverage  (boundary between Mid and Small)
+    imi: 1187.0               # 99% coverage
+  # EM GMSR = 0.5 x DM  (GIMI 2.3.2.1)
+  em_multiplier_of_dm: 0.5
+  # Global Minimum Size Range = 0.5x to 1.15x the GMSR  (GIMI 2.3.2)
+  range_lower_multiple: 0.50
+  range_upper_multiple: 1.15
+
+# ---------------------------------------------------------------------------
+# Market Coverage Target Range  (GIMI 2.3.1)
+# ---------------------------------------------------------------------------
+coverage_targets:
+  large_cap: 0.70
+  standard: 0.85            # +/- 5%
+  imi: 0.99
+  standard_tolerance: 0.05
+
+# ---------------------------------------------------------------------------
+# Liquidity screens  (GIMI 2.2.5 for new, 3.1.2.4 for existing constituents)
+# ---------------------------------------------------------------------------
+liquidity:
+  # EM Minimum Liquidity Requirement for securities NOT currently in the IMI.
+  new_constituent:
+    atvr_3m_min_pct: 15.0
+    atvr_12m_min_pct: 15.0
+    fot_3m_min_pct: 80.0
+  # Relaxed thresholds that let an EXISTING IMI constituent stay in (GIMI 3.1.2.4).
+  # 12m ATVR may fall to 2/3 of the 15% EM minimum, i.e. 10%.
+  existing_constituent:
+    atvr_12m_min_pct: 10.0
+    atvr_3m_min_pct: 5.0
+    fot_3m_min_pct: 70.0
+  # Minimum trading days in a month before a 1-month ATVR can be computed
+  # (Liquidity Data Methodology, section 2).
+  min_trading_days_for_monthly_atvr: 5
+  # Securities priced above this level fail the liquidity screen (GIMI 2.2.5).
+  # Applies only to non-constituents.
+  max_price_usd: 10000.0
+
+# ---------------------------------------------------------------------------
+# Foreign Inclusion Factor  (GIMI 2.2.6, 2.3.6.1, 3.1.2.5)
+# ---------------------------------------------------------------------------
+fif:
+  min_fif: 0.15
+  # A security with FIF < 0.15 may still enter the Standard Index if its FFMC
+  # reaches 1.8x the normal minimum FFMC requirement (GIMI 2.3.6.1 / 3.1.2.5).
+  low_fif_ffmc_multiple: 1.8
+  # Securities with FIF >= 0.75 are exempt from the Extreme Price Increase screen.
+  epi_exempt_fif: 0.75
+
+# ---------------------------------------------------------------------------
+# Final Size-Segment Investability Requirements  (GIMI 2.3.6.1, 3.1.6.2)
+# ---------------------------------------------------------------------------
+final_investability:
+  # FFMC must be >= 50% of the Standard Market Size-Segment Cutoff.
+  standard_min_ffmc_fraction_of_cutoff: 0.50
+  # Existing constituents only need 2/3 of that threshold.
+  existing_constituent_relief: 0.6666666667
+
+# ---------------------------------------------------------------------------
+# Index Review buffer zones  (GIMI 3.1.5.1)
+# ---------------------------------------------------------------------------
+# "The buffer zones at Index Reviews are defined with boundaries of 2/3rd of and
+#  1.5 times the Market Size-Segment Cutoff between two size-segments."
+buffers:
+  add_multiple: 1.50              # non-constituent must clear 1.5x the cutoff
+  delete_multiple: 0.6666666667   # constituent exits below 2/3 of the cutoff
+  small_cap_entry_multiple: 1.50
+  # Under "light rebalancing" (market stress, GIMI Appendix VIII) the buffers widen.
+  light_rebalancing:
+    add_multiple: 1.80
+    delete_multiple: 0.50
+
+# ---------------------------------------------------------------------------
+# Minimum Length of Trading  (GIMI 2.2.7, 3.1.2.7)
+# ---------------------------------------------------------------------------
+min_length_of_trading:
+  months: 3
+  # An IPO younger than 3 months can still enter if full mcap >= 1.8x cutoff AND
+  # FFMC >= 1.8 x (0.5 x cutoff).
+  waiver_full_mcap_multiple: 1.80
+  waiver_ffmc_multiple: 1.80
+
+# ---------------------------------------------------------------------------
+# Extreme Price Increase screen  (GIMI 2.3.6.3)
+# ---------------------------------------------------------------------------
+# Excess return = security return over the window minus the average return of IMI
+# constituents in the same country-sector. Breaching ANY window = EPI.
+# Window lengths are calendar Mon-Fri days before the price cutoff date.
+extreme_price_increase:
+  enabled: true
+  thresholds_pct:
+    5: 100
+    10: 100
+    15: 100
+    20: 100
+    25: 200
+    30: 200
+    35: 200
+    40: 200
+    45: 400
+    50: 400
+    55: 400
+    60: 400
+    90: 500
+    120: 800
+    150: 1500
+    180: 1500
+    250: 2500
+
+# ---------------------------------------------------------------------------
+# Index continuity  (GIMI 2.4)
+# ---------------------------------------------------------------------------
+continuity:
+  em_standard_min_constituents: 3

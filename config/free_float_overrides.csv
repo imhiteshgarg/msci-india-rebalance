@@ -1,0 +1,16 @@
+symbol,fif,note
+# Manual Foreign Inclusion Factor corrections, as a fraction (0.12) or a percentage (12).
+#
+# The automated estimate is float shares over total shares from the price source, which
+# is a reasonable proxy for ordinary companies and a poor one wherever the shareholder
+# register is unusual: government stakes, promoter cross-holdings, pre-IPO lock-ins,
+# ADR/GDR pools. MSCI builds its number from a holder-by-holder classification into
+# strategic and non-strategic (GIMI Appendix VI), so enter known cases here rather than
+# letting the proxy decide a marginal name.
+#
+# LIC is the November 2026 illustration. The government's August 2026 Offer For Sale
+# lifted the float from roughly 5% to low double digits. FIF stays under MSCI's 0.15
+# threshold, so LIC had to clear 1.8x the normal minimum free-float market cap
+# (GIMI 2.3.6.1) rather than the ordinary test - and did. Leave this commented out to
+# see whether the price source already reflects the OFS.
+# LICI,0.112,Aug-2026 government OFS lifted float from ~5%

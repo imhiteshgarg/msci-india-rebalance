@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Fetched market data. Regenerate by running without --offline; deliberately not
+# committed because it is large and because a stale cache silently changes results.
+cache/
+cache_smoke/
+
+# Generated reports.
+out/
+
+# Methodology PDFs are large; the extracted .txt is what the code was written against.
+research/*.pdf

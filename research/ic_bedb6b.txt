@@ -1,0 +1,715 @@
+
+===P1===
+ 
+ MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+ 
+ 
+ 
+  
+ 
+MSCI Liquidity Data 
+Methodology 
+ 
+  
+MSCI Methodology for the Liquidity Data 
+MSCI LIQUIDITY DATA 
+METHODOLOGY 
+May 2025 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+
+
+===P2===
+ 
+ 
+ 
+ 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+msci.com  Page 2 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+Contents 
+ 
+1 Defining and Calculating Liquidity Ratios .................................... 3 
+1.1 Annual Traded Value Ratio..................................................................... 3 
+1.2 Frequency of Trading .............................................................................. 4 
+2 Minimum Trading Days Required ................................................. 6 
+3 Adjustments to Liquidity Ratios ................................................... 7 
+3.1 Suspension ............................................................................................... 7 
+3.2 IPO month Extrapolation ......................................................................... 7 
+3.3 Weekend Trading .................................................................................... 8 
+3.4 Inclusion Factor ........................................................................................ 8 
+4 Maintenance of Liquidity Ratios ................................................... 9 
+4.1 Universe..................................................................................................... 9 
+4.2 Periodic Maintenance ............................................................................. 9 
+5 Correction Policy .......................................................................... 11 
+Appendix I: Examples of Adjustments to Liquidity Ratios ................... 13 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+===P3===
+ 
+ 
+ 
+ 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+msci.com  Page 3 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+1 Defining and Calculating Liquidity Ratios 
+Liquidity is one of the key criteria used by MSCI to determine investable securities. 
+MSCI measures the liquidity of security by: 
+Annual Traded Value Ratio (ATVR): This ratio mitigates the impact of extreme 
+daily trading volumes and considers the free float-adjusted market capitalization of 
+securities. 
+Frequency of Trading (FOT): This ratio ensures trade continuity over a period. 
+ATVR and FOT aim to select securities with strong short-term and long-term 
+liquidity. 
+ATVR and FOT are calculated at the individual security level and are computed 
+over a period of one or multiple months, with 3-Month and 1-Year period values 
+used as key liquidity indicators. 
+1.1 Annual Traded Value Ratio 
+The ATVR of each security is calculated in 4-steps: 
+1. Daily Traded Value: Computed by multiplying the number of shares traded 
+during the day with the closing price of that security 
+2. Median Daily Traded Value: Computed as the median of the daily traded 
+values in a given month, excluding days with no trading volume 
+3. Monthly Median Traded Value: Computed using the median daily traded 
+value, multiplied by the number of days in the month that the security traded 
+4. Annual Traded Value Ratio: The ATVR is computed by dividing the 
+Monthly Median Traded Value of a security by its free float-adjusted security 
+market capitalization at the end of the month and annualizing it by multiplying it 
+with 12 
+1-Month ATVR = 
+ 
+
+
+===P4===
+ 
+ 
+ 
+ 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+msci.com  Page 4 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+The 1-Year ATVR is obtained by taking the average of the monthly median traded 
+value ratios of the previous 12 months and annualizing it by multiplying it by 12. 
+Similarly, the 3-month ATVR is obtained by taking the average of the monthly 
+median traded value ratios of the previous 3 months and annualizing it by 
+multiplying it by 12. 
+MSCI uses consolidated trading values for securities listed in the USA and Canada 
+and single exchange values for other markets. 
+In general, MSCI uses free float-adjusted security market capitalization after the 
+application of any relevant adjustment factors, as stated in Section 3.4 below. 
+The 1-Year ATVR is not calculated when 12 months of monthly traded value ratios 
+are not available and 3-month ATVR is not calculated when 3 months of monthly 
+traded value ratios are not available. The ATVR values are rounded to two decimals. 
+1.2 Frequency of Trading 
+The Frequency of Trading is determined by dividing the number of days a security 
+traded by the maximum possible number of trading days on the stock exchange 
+within that period. 
+The FOT values are computed at security level. The values range between 0 and 
+100 and are rounded. 
+1 – Month FOT =  
+ 
+The 1-Year Frequency of Trading is determined by dividing the number of days a 
+security traded during the previous 12-month period by the maximum possible 
+number of trading days within this period. Similarly, the 3-month Frequency of 
+Trading is determined by dividing the number of days a security traded during the 
+previous 3-month period by the maximum possible number of trading days within 
+this period. 
+The maximum number of trading days available on the exchange will exclude the 
+exchange holidays. 
+
+
+===P5===
+ 
+ 
+ 
+ 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+msci.com  Page 5 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+The 1-Year FOT is not calculated if 12 months of trading is not available and 3-
+month FOT is not calculated if 3 months of trading is not available.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+===P6===
+ 
+ 
+ 
+ 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+msci.com  Page 6 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+2 Minimum Trading Days Required 
+A minimum number of trading days is required each month to compute ATVR and 
+FOT, ensuring ratios are based on representative data rather than skewed 
+numbers. 
+ATVR: Minimum trading days required to compute 1-Month ATVR is 5 days. 
+FOT: Minimum days required to compute 1-month FOT is 1 day. 
+To calculate minimum days, both trading days as well as potential trading day will 
+be considered. 
+Potential trading days are defined as days when security was available for trading 
+on the exchange, but it did not trade (i.e., volume traded was 0 and the exchange 
+was open). 
+After a company's initial public offering (IPO), trading volume may spike in the first 
+few days, which does not reflect the long-term average. Therefore, the first three 
+days of trading are excluded from calculations in the month of IPO. Additionally, 
+there must be at least five trading days, excluding the first three days, to calculate 
+the monthly median value. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+===P7===
+ 
+ 
+ 
+ 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+msci.com  Page 7 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+3 Adjustments to Liquidity Ratios 
+3.1 Suspension 
+Adjustments are made to the ATVR and FOT ratios for the days when security is 
+under trading suspension. 
+ATVR: The suspended days are added back to the number of days in the month 
+the security traded to derive the monthly median traded value. 
+FOT: The suspended days are excluded from the maximum possible number of 
+trading days in the period. 
+When security is suspended for the entire period of the relevant ATVR or FOT 
+calculations:  
+ATVR: The values are not calculated.  
+FOT: The values will be equal to 100%. 
+Please refer to Example 1 of Appendix I: Examples of Adjustments to Liquidity 
+Ratios for more details.  
+3.2 IPO month Extrapolation 
+For securities that meet the minimum days to compute ATVR, the 1-Month ATVR 
+computation for the IPO month will be computed using available trading days for 
+the security and extrapolated over the total number of trading days available for the 
+month. MSCI will adjust the relevant monthly median traded value by considering 
+the market trading days prior to the listing of security. 
+1 – Month ATVR in IPO Month = 
+ 
+Pre IPO-Days = Count of Exchange Traded days from start of the month till the IPO 
+date. 
+Please refer to Example 2 of Appendix I: Examples of Adjustments to Liquidity 
+Ratios for more details. 
+
+
+===P8===
+ 
+ 
+ 
+ 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+msci.com  Page 8 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+3.3 Weekend Trading 
+For countries with weekend trading (Saturdays and/or Sundays), the ATVR and 
+FOT computation includes the trading volume and prices on those days. 
+ATVR and FOT values are computed on the last weekday of each month. If the last 
+trading day is a weekend, the calculation is done on the previous working day, 
+excluding weekend prices and trading volumes after the calculation day.  
+Please refer to Example 3 of Appendix I: Examples of Adjustments to Liquidity 
+Ratios for more details. 
+3.4 Inclusion Factor 
+The ATVR FIF Adjusted Ratio is calculated using the Foreign Inclusion Factor 
+(FIF) and the ATVR DIF Adjusted Ratio using the Domestic Inclusion Factor 
+(DIF), following the MSCI Global Investable Market Indexes (GIMI) Methodology 
+available at: https://www.msci.com/index-methodology. In some cases of 
+FIF/DIF changes due to changes in the inclusion factors, MSCI may modify the 
+ATVR values accordingly. 
+For securities that are newly added to the universe, the earliest available FIF/DIF 
+will be applied for the months preceding the addition of security to the universe.  
+In case of a security’s FIF/DIF is zero at Index Review or during the relevant 
+calculation period: 
+ATVR: The values are computed as 0. 
+FOT: It is not applicable. 
+Please refer to Example 4 of Appendix I: Examples of Adjustments to Liquidity 
+Ratios for more details. 
+ 
+
+===P9===
+ 
+ 
+ 
+ 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+msci.com  Page 9 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+4 Maintenance of Liquidity Ratios 
+4.1 Universe 
+The universe is aligned with the MSCI Free Float Data Product. For details, please 
+refer to the MSCI Free Float Data Methodology available at: 
+https://www.msci.com/index-methodology. 
+ 
+4.2 Periodic Maintenance 
+The Annual Traded Value Ratio and Frequency of Trading data is updated 
+monthly. The Investability data product file is delivered within five business days 
+post the previous month end date. 
+MSCI sources market data information from third party vendors as well as from 
+publicly available information made available by the stock exchanges to calculate 
+liquidity. 
+Every month, the liquidity ratios are calculated for the latest 1-year period and the 
+corresponding four consecutive quarters. 
+The table below shows the period used for each calculation month.  
+Calculation 
+Month 
+1-Year 
+Period 
+3-Month 
+Period 1 
+(P1) 
+3-Month 
+Period 2 
+(P2) 
+3-Month 
+Period 3 
+(P3) 
+3-Month 
+Period 4 
+(P4) 
+December January- December October- December July- September April-June January- March 
+November December- November September- November June- August March-May December- February 
+October November- October August- October May-July February- April November- January 
+September October- September July- September April-June January- March October- December 
+August September- August June- August March-May December- February September- November 
+
+===P10===
+ 
+ 
+ 
+ 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+msci.com  Page 10 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+July August- July May-July February- April November- January August- October 
+June July-June April-June January- March October- December July- September 
+May June-May March-May December- February September- November June- August 
+April May-April February- April November- January August- October May-July 
+March April-March January- March October- December July- September April-June 
+February March- February December- February September- November June- August March-May 
+January February- January November- January August- October May-July February- April 
+ 
+For example, for the calculation month of September 2024, the 1-Year ATVR and 
+FOT ratio will be computed for the period from October 2023 to September 2024, 
+the 3-Month ATVR and FOT for P1 (July-September 2024), P2 (April-June 2024), 
+P3 (January-March 2024) and P4 (October-December 2023). 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+===P11===
+ 
+ 
+ 
+ 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+msci.com  Page 11 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+5 Correction Policy 
+Any corrections to data will be updated and reflected in the Investability data product 
+as early as practicable. 
+If there are any changes to the liquidity ratios due to corrections in underlying data, 
+technical issues, anomalies, or incompleteness, announcement will be published by 
+MSCI with the revised liquidity ratios. If the changes do not meet the above criteria, 
+no announcement is made by MSCI. 
+MSCI reserves the right to handle specific cases differently if more appropriate. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+===P12===
+ 
+ 
+ 
+ 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+msci.com  Page 12 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  APPENDICES 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+===P13===
+ 
+ 
+msci.com  Page 13 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+ 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+Appendix I: Examples of Adjustments to 
+Liquidity Ratios 
+ Example 1: Suspension 
+In a scenario where for a given month with 22 Exchange traded days, a security was 
+suspended for 16 days and traded for 4 days. 
+Security will meet minimum days to compute both ATVR and FOT. 
+Trade Days [4] + Potential Trade Days [2] = 6 days, Greater than 5 days threshold 
+Potential trading days are defined as days when security was available for trading on 
+the exchange, but it did not trade (i.e., volume traded was 0 and the exchange was 
+open).  
+Median Daily Traded Value will be computed using the 4 days of traded volume 
+available. 
+For Monthly Median Traded Value computation, the number of suspension days [16] 
+will be included in the number of days that the security traded in the month, to compute 
+the ATVR. 
+For Frequency of Trading computation, the suspended days [16] are excluded from the 
+maximum possible number of trading days. 
+ 
+ Example 2: IPO Month Extrapolation 
+In a scenario where for a given month with 20 Exchange traded days, security was 
+listed on the 11th day, traded for 8 days, and did not trade for 2 days. 
+Security will meet minimum days to compute ATVR. 
+Trade Days [8] + Potential Trade Days [2] – IPO Days [3] = 7 days, Greater than 5 days 
+threshold 
+Potential trading days are defined as days when security was available for trading on 
+the exchange, but it did not trade (i.e., volume traded was 0 and the exchange was 
+open). 
+IPO Days are the first three days of trading that are excluded from calculations in the 
+month of IPO. 
+While computing ATVR, Pre IPO days will be added to “Number of days security traded” 
+as below: 
+
+===P14===
+ 
+ 
+ 
+msci.com  Page 14 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+Number of days security traded = Actual Number of days security traded [8] + Pre IPO-
+Days [10] 
+ 
+ Example 3: Weekend Trading 
+For a security listed in Saudi Arabia country where exchange trades on Sundays:  
+For the month of June 2024: 
+Last Working Day of the month – 28 June 2024 (Friday) 
+Last trading day of the security – 30 June 2024 (Sunday) 
+ATVR and FOT will be computed with data as of 28 June 2024 
+The weekend volume and prices for 30 June 2024 will not be considered for the 
+liquidity data computation for the month of June 2024 
+ 
+ Example 4: Inclusion Factor 
+For security listed on a stock exchange on 1 January 2024 
+The 1-Month ATVR FIF Adjusted = 1-Month ATVR / FIF 
+3-Month ATVR FIF Adjusted = Average of 1-Month ATVR FIF Adjusted of previous 3 
+months 
+1- Year ATVR FIF Adjusted = Average of 1-Month ATVR FIF Adjusted of previous 12 
+months 
+Accordingly, 1-Month ATVR FIF Adjusted for June = 160%/0.5 = 320% 
+3-Month ATVR FIF Adjusted for June = Average of 159%, 161%, 320% = 213% 
+Month FIF 
+1-Month 
+ATVR  
+1-Month 
+ATVR FIF 
+Adjusted 
+3-Month 
+ATVR FIF 
+Adjusted 
+1-Year 
+ATVR FIF 
+Adjusted 
+January 1 150% 150%     
+February 1 152% 152%     
+March 1 160% 160% 154%   
+April 1 159% 159% 157%   
+May 1 161% 161% 160%   
+
+===P15===
+ 
+ 
+ 
+msci.com  Page 15 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+June 0.5 160% 320% 213%   
+July 0.5 165% 330% 270%   
+August 0.5 163% 326% 325%   
+September 0.5 166% 332% 329%   
+October 0.5 170% 340% 333%   
+November 0.5 172% 344% 339%   
+December 0.5 175% 350% 345% 260% 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+===P16===
+ 
+ 
+ 
+msci.com  Page 16 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+ 
+ 
+ 
+  
+Contact Us 
+About MSCI 
+MSCI is a leading provider of critical decision 
+support tools and services for the global 
+investment community. With over 50 years of 
+expertise in research, data and technology, we 
+power better investment decisions by enabling 
+clients to understand and analyze key drivers of 
+risk and return and confidently build more 
+effective portfolios. We create industry-leading 
+research-enhanced solutions that clients use to 
+gain insight into and improve transparency across 
+the investment process. 
+ 
+To learn more, please visit www.msci.com. 
+msci.com/contact-us 
+ 
+The process for submitting a formal index complaint 
+can be found on the index regulation page of MSCI’s 
+website at: https://www.msci.com/index-regulation. 
+ 
+AMERICA 
+United States 
+Canada 
+Brazil 
+Mexico 
++ 1 888 588 4567 * 
++ 1 416 687 6270 
++ 55 11 4040 7830 
++ 52 81 1253 4020 
+EUROPE, MIDDLE EAST & AFRICA 
+South Africa 
+Germany  
+Switzerland 
+United Kingdom 
+Italy 
+France 
++ 27 21 673 0103 
++ 49 69 133 859 00 
++ 41 22 817 9777 
++ 44 20 7618 2222 
++ 39 02 5849 0415 
++ 33 17 6769 810 
+ASIA PACIFIC 
+China 
+Hong Kong 
+India 
+Malaysia 
+South Korea 
+Singapore 
+Australia 
+Taiwan  
+Thailand 
+Japan 
+* toll-free 
++ 86 21 61326611 
++ 852 2844 9333 
++ 91 22 6784 9160 
+1800818185 * 
++ 82 70 4769 4231 
++ 65 67011177 
++ 612 9033 9333 
+008 0112 7513 * 
+0018 0015 6207 7181 * 
++ 81 3 4579 0333 
+
+===P17===
+ 
+ 
+ 
+msci.com  Page 17 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+ 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+Notice and Disclaimer 
+This document and all of the information contained in it, including without limitation all text, data, graphs, charts (collectively, the “Information”) is the property 
+of MSCI Inc. or its subsidiaries (collectively, “MSCI”), or MSCI’s licensors, direct or indirect suppliers or any third party involved in making or compiling any 
+Information (collectively, with MSCI, the “Information Providers”) and is provided for informational purposes only. The Information may not be modified, 
+reverse-engineered, reproduced or redisseminated in whole or in part without prior written permission from MSCI. All rights in the Information are reserved by 
+MSCI and/or its Information Providers. 
+The Information may not be used to create derivative works or to verify or correct other data or information. For example (but without limitation), the 
+Information may not be used to create indexes, databases, risk models, analytics, software, or in connection with the issuing, offering, sponsoring, managing 
+or marketing of any securities, portfolios, financial products or other investment vehicles utilizing or based on, linked to, tracking or otherwise derived from 
+the Information or any other MSCI data, information, products or services.   
+The user of the Information assumes the entire risk of any use it may make or permit to be made of the Information. NONE OF THE INFORMATION 
+PROVIDERS MAKES ANY EXPRESS OR IMPLIED WARRANTIES OR REPRESENTATIONS WITH RESPECT TO THE INFORMATION (OR THE RESULTS TO BE 
+OBTAINED BY THE USE THEREOF), AND TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, EACH INFORMATION PROVIDER EXPRESSLY 
+DISCLAIMS ALL IMPLIED WARRANTIES (INCLUDING, WITHOUT LIMITATION, ANY IMPLIED WARRANTIES OF ORIGINALITY, ACCURACY, TIMELINESS, 
+NON-INFRINGEMENT, COMPLETENESS, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE) WITH RESPECT TO ANY OF THE 
+INFORMATION. 
+Without limiting any of the foregoing and to the maximum extent permitted by applicable law, in no event shall any Information Provider have any liability 
+regarding any of the Information for any direct, indirect, special, punitive, consequential (including lost profits) or any other damages even if notified of the 
+possibility of such damages. The foregoing shall not exclude or limit any liability that may not by applicable law be excluded or limited, including without 
+limitation (as applicable), any liability for death or personal injury to the extent that such injury results from the negligence or willful default of itself, its 
+servants, agents or sub-contractors.   
+Information containing any historical information, data or analysis should not be taken as an indication or guarantee of any future performance, analysis, 
+forecast or prediction. Past performance does not guarantee future results.   
+The Information may include “Signals,” defined as quantitative attributes or the product of methods or formulas that describe or are derived from calculations 
+using historical data. Neither these Signals nor any description of historical data are intended to provide investment advice or a recommendation to make (or 
+refrain from making) any investment decision or asset allocation and should not be relied upon as such. Signals are inherently backward-looking because of 
+their use of historical data, and they are not intended to predict the future. The relevance, correlations and accuracy of Signals frequently will change 
+materially. 
+The Information should not be relied on and is not a substitute for the skill, judgment and experience of the user, its management, employees, advisors and/or 
+clients when making investment and other business decisions. All Information is impersonal and not tailored to the needs of any person, entity or group of 
+persons. 
+None of the Information constitutes an offer to sell (or a solicitation of an offer to buy), any security, financial product or other investment vehicle or any 
+trading strategy.  
+It is not possible to invest directly in an index. Exposure to an asset class or trading strategy or other category represented by an index is only available 
+through third party investable instruments (if any) based on that index. MSCI does not issue, sponsor, endorse, market, offer, review or otherwise express any 
+opinion regarding any fund, ETF, derivative or other security, investment, financial product or trading strategy that is based on, linked to or seeks to provide 
+an investment return related to the performance of any MSCI index (collectively, “Index Linked Investments”). MSCI makes no assurance that any Index 
+Linked Investments will accurately track index performance or provide positive investment returns. MSCI Inc. is not an investment adviser or fiduciary and 
+MSCI makes no representation regarding the advisability of investing in any Index Linked Investments. 
+Index returns do not represent the results of actual trading of investible assets/securities. MSCI maintains and calculates indexes, but does not manage 
+actual assets. The calculation of indexes and index returns may deviate from the stated methodology. Index returns do not reflect payment of any sales 
+charges or fees an investor may pay to purchase the securities underlying the index or Index Linked Investments. The imposition of these fees and charges 
+would cause the performance of an Index Linked Investment to be different than the MSCI index performance. 
+The Information may contain back tested data. Back-tested performance is not actual performance, but is hypothetical. There are frequently material 
+differences between back tested performance results and actual results subsequently achieved by any investment strategy.   
+Constituents of MSCI equity indexes are listed companies, which are included in or excluded from the indexes according to the application of the relevant 
+index methodologies. Accordingly, constituents in MSCI equity indexes may include MSCI Inc., clients of MSCI or suppliers to MSCI. Inclusion of a security 
+within an MSCI index is not a recommendation by MSCI to buy, sell, or hold such security, nor is it considered to be investment advice. 
+Data and information produced by various affiliates of MSCI Inc., including MSCI ESG Research LLC and Barra LLC, may be used in calculating certain MSCI 
+indexes. More information can be found in the relevant index methodologies on www.msci.com.  
+MSCI receives compensation in connection with licensing its indexes to third parties. MSCI Inc.’s revenue includes fees based on assets in Index Linked 
+Investments. Information can be found in MSCI Inc.’s company filings on the Investor Relations section of msci.com. 
+MSCI ESG Research LLC is a Registered Investment Adviser under the Investment Advisers Act of 1940 and a subsidiary of MSCI Inc. Neither MSCI nor any 
+of its products or services recommends, endorses, approves or otherwise expresses any opinion regarding any issuer, securities, financial products or 
+instruments or trading strategies and MSCI’s products or services are not a recommendation to make (or refrain from making) any kind of investment 
+decision and may not be relied on as such, provided that applicable products or services from MSCI ESG Research may constitute investment advice. MSCI 
+ESG Research materials, including materials utilized in any MSCI ESG Indexes or other products, have not been submitted to, nor received approval from, the 
+United States Securities and Exchange Commission or any other regulatory body. MSCI ESG and climate ratings, research and data are produced by MSCI 
+ESG Research LLC, a subsidiary of MSCI Inc. MSCI ESG Indexes, Analytics and Real Estate are products of MSCI Inc. that utilize information from MSCI ESG 
+Research LLC. MSCI Indexes are administered by MSCI Limited (UK) and MSCI Deutschland GmbH. 
+Please note that the issuers mentioned in MSCI ESG Research materials sometimes have commercial relationships with MSCI ESG Research and/or MSCI Inc. 
+(collectively, “MSCI”) and that these relationships create potential conflicts of interest. In some cases, the issuers or their affiliates purchase research or other 
+products or services from one or more MSCI affiliates. In other cases, MSCI ESG Research rates financial products such as mutual funds or ETFs that are 
+managed by MSCI’s clients or their affiliates, or are based on MSCI Inc. Indexes. In addition, constituents in MSCI Inc. equity indexes include companies that 
+subscribe to MSCI products or services. In some cases, MSCI clients pay fees based in whole or part on the assets they manage. MSCI ESG Research has 
+taken a number of steps to mitigate potential conflicts of interest and safeguard the integrity and independence of its research and ratings. More information 
+about these conflict mitigation measures is available in our Form ADV, available at https://adviserinfo.sec.gov/firm/summary/169222.   
+
+===P18===
+ 
+ 
+ 
+msci.com  Page 18 of 18 
+ 
+© 2025 MSCI Inc. All rights reserved. Please refer to the disclaimer at the end of this document. 
+ 
+MSCI LIQUIDITY DATA METHODOLOGY | MAY 2025 
+Any use of or access to products, services or information of MSCI requires a license from MSCI. MSCI, Barra, RiskMetrics, IPD and other MSCI brands and 
+product names are the trademarks, service marks, or registered trademarks of MSCI or its subsidiaries in the United States and other jurisdictions. The Global 
+Industry Classification Standard (GICS) was developed by and is the exclusive property of MSCI and S&P Dow Jones Indices. “Global Industry Classification 
+Standard (GICS)” is a service mark of MSCI and S&P Dow Jones Indices. 
+MIFID2/MIFIR notice: MSCI ESG Research LLC does not distribute or act as an intermediary for financial instruments or structured deposits, nor does it deal 
+on its own account, provide execution services for others or manage client accounts. No MSCI ESG Research product or service supports, promotes or is 
+intended to support or promote any such activity. MSCI ESG Research is an independent provider of ESG data.  
+Privacy notice: For information about how MSCI collects and uses personal data, please refer to our Privacy Notice at https://www.msci.com/privacy-pledge. 
+ 

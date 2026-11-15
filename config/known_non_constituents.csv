@@ -1,0 +1,57 @@
+symbol,as_of,source,note
+# Names known NOT to be MSCI India Standard Index members. Subtracted from the
+# reconstructed membership set.
+#
+# Why this file is the highest-value input in the repo. The +50% add buffer means a
+# company can sit between 1.0x and 1.5x the size cut-off for years without ever being
+# added, so membership is path-dependent and cannot be inferred from current size. The
+# model reconstructs membership by replaying past reviews, and for any name that
+# loiters near 1.5x the cut-off that replay is only as good as the cut-off estimate -
+# a few percent of error puts the company in the index two years early, after which
+# its genuine addition is reported as "already a member". Coforge is precisely that
+# case: it oscillated around 1.5x from early 2025 to late 2026.
+#
+# The fix is not a better estimate, it is the actual membership. The practical proxy is
+# the iShares MSCI India ETF (INDA) holdings file, which is what Centrum anchors its
+# published work to. BlackRock blocks scripted downloads, so fetch it by hand.
+#
+# PROVENANCE: the rows below come from Centrum Broking's pre-review note dated around
+# 16 September 2026, reported by Moneycontrol on 19 September 2026 - that is, published
+# public information from BEFORE MSCI's 11 November announcement. The note names these
+# as non-members that clear or sit near the +50% add buffer, and separately records
+# that INDA did not hold the large low-float names. Using it is not hindsight; it is
+# what a practitioner had on their desk at the price cut-off.
+# https://www.moneycontrol.com/news/business/markets/lic-meesho-coforge-swiggy-top-centrum-s-high-conviction-list-for-msci-india-november-review-14036314.html
+#
+# High-conviction addition candidates named in the note:
+LICI,2026-09-16,Centrum pre-review note,corporate-action driven; Aug-2026 OFS lifted float
+MEESHO,2026-09-16,Centrum pre-review note,high float; 3.54x the float boundary
+COFORGE,2026-09-16,Centrum pre-review note,full float; 3.36x the float boundary
+SWIGGY,2026-09-16,Centrum pre-review note,full float; 3.22x the float boundary
+GLENMARK,2026-09-16,Centrum pre-review note,1.55x the float boundary
+# Clear the buffer but ranked lower or flagged for thin float:
+MFSL,2026-09-16,Centrum pre-review note,Max Financial Services
+360ONE,2026-09-16,Centrum pre-review note,
+ATHERENERG,2026-09-16,Centrum pre-review note,Ather Energy
+RADICO,2026-09-16,Centrum pre-review note,Radico Khaitan
+ADANIGREEN,2026-09-16,Centrum pre-review note,low-float watch; INDA did not hold it
+LLOYDSME,2026-09-16,Centrum pre-review note,Lloyds Metals; low-float watch
+HYUNDAI,2026-09-16,Centrum pre-review note,low float; INDA did not hold it
+# Inside the buffer zone, would need a further up-move before the cut-off:
+SONACOMS,2026-09-16,Centrum pre-review note,needs roughly 1% more
+BIOCON,2026-09-16,Centrum pre-review note,
+WELCORP,2026-09-16,Centrum pre-review note,Welspun Corp
+DELHIVERY,2026-09-16,Centrum pre-review note,
+KARURVYSYA,2026-09-16,Centrum pre-review note,Karur Vysya Bank
+NAVINFLUOR,2026-09-16,Centrum pre-review note,Navin Fluorine
+REDINGTON,2026-09-16,Centrum pre-review note,
+ASTERDM,2026-09-16,Centrum pre-review note,Aster DM Healthcare
+APARINDS,2026-09-16,Centrum pre-review note,Apar Industries
+#
+# From Centrum's August 2026 watchlist, reported before the 12 August announcement.
+# The note named all four stocks MSCI went on to add that review. Dated July so the
+# loader applies them to the August review and not retrospectively to earlier ones.
+ADANIENSOL,2026-07-15,Centrum Aug-2026 watchlist,Adani Energy Solutions
+GROWW,2026-07-15,Centrum Aug-2026 watchlist,Billionbrains Garage Ventures
+LAURUSLABS,2026-07-15,Centrum Aug-2026 watchlist,
+LENSKART,2026-07-15,Centrum Aug-2026 watchlist,

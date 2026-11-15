@@ -1,0 +1,140 @@
+# Ground truth for back-testing. MSCI India Standard Index (a.k.a. MSCI India Index,
+# the large+mid cap segment that INDA / EM-index passive money tracks).
+#
+# Each entry records what MSCI actually announced, so the model can be scored.
+# Sources are listed per review; add new reviews here as they are announced.
+
+reviews:
+
+  2026-02:
+    type: QIR
+    announcement_date: 2026-02-11
+    effective_date: 2026-02-27
+    standard:
+      additions:
+        - ABCAPITAL                  # Aditya Birla Capital
+        - LTF                        # L&T Finance
+      deletions:
+        - IRCTC                      # Indian Railway Catering and Tourism Corporation
+    notes: >
+      India's Small Cap Index saw 7 additions and 34 deletions, taking the Indian
+      small cap count to 480 from 508. Net passive outflow for India was estimated
+      at around USD 260 mn, with AU Small Finance Bank gaining on a weight increase.
+    sources:
+      - https://www.msci.com/eqb/gimi/stdindex/MSCI_Feb26_STPublicList.pdf
+      - https://economictimes.indiatimes.com/markets/stocks/news/msci-rejig-aditya-birla-capital-lt-finance-in-irctc-out-heres-everything-you-need-to-know/articleshow/128185600.cms
+
+  2026-05:
+    type: SAIR
+    announcement_date: 2026-05-12
+    effective_date: 2026-05-29
+    standard:
+      # MSCI's published change list named FIVE additions, including Adani Energy
+      # Solutions. It then reversed that decision before implementation, so only four
+      # went in. Recorded here as implemented, which is what the model should be
+      # scored against. Adani Energy Solutions was added at the following review.
+      additions:
+        - FEDERALBNK
+        - INDIANB                    # Indian Bank
+        - MCX                        # Multi Commodity Exchange of India
+        - NATIONALUM                 # National Aluminium Company
+      deletions:
+        - HYUNDAI                    # Hyundai Motor India
+        - JUBLFOOD                   # Jubilant FoodWorks
+        - KALYANKJIL                 # Kalyan Jewellers India
+        - RVNL                       # Rail Vikas Nigam
+    announced_but_reversed:
+      - ADANIENSOL
+    notes: >
+      MSCI withdrew Adani Energy Solutions from the addition list shortly before
+      implementation, citing the India Short Term and Long Term Additional
+      Surveillance Measure: under Appendix I of the GIMI methodology, MSCI does not
+      implement IMI additions for securities entering ASM at an Index Review. A useful
+      reminder that the published rules include discretionary and regulatory overlays
+      this model does not reproduce.
+    sources:
+      - https://www.msci.com/eqb/gimi/stdindex/MSCI_May26_STPublicList.pdf
+      - https://economictimes.indiatimes.com/markets/stocks/news/msci-decides-against-adding-adani-energy-to-global-standard-indexes-in-may-review/articleshow/131055020.cms
+      - https://www.livemint.com/market/stock-market-news/msci-rejig-adani-energy-mcx-federal-bank-enter-global-standard-index-rvnl-hyundai-motor-kalyan-jewellers-removed-11778635142880.html
+
+  2026-11:
+    type: SAIR                     # Semi-Annual Index Review
+    announcement_date: 2026-11-11
+    effective_date: 2026-11-30     # changes effective at the close
+    standard:
+      additions:
+        - COFORGE
+        - LICI
+        - ADANIGREEN
+        - MEESHO
+      deletions:
+        - PIIND
+    smallcap:
+      # 11 additions, 29 deletions in total; only the publicly named ones are listed.
+      additions_named:
+        - PIIND                    # migrates down from Standard
+        - SHADOWFAX
+        - APOLLO                   # Apollo Micro Systems
+        - HUDCO
+        - DIAMONDPOWER
+        - AEQUS
+        - E2E
+        - AXISCADES
+      deletions_named:
+        - COFORGE                  # migrates up to Standard
+        - HCC
+        - PRAJIND
+        - ARVINDFASN
+        - IONEXCHANG
+      additions_count: 11
+      deletions_count: 29
+    notes: >
+      India weight in the MSCI EM Index rose from ~11.5% to ~11.7%. Nuvama
+      Alternative & Quantitative Research estimated roughly USD 1.7-2.0 bn of
+      passive inflow across the four additions. LIC's inclusion was driven by the
+      August 2026 government Offer For Sale, which lifted its free float from
+      roughly 5% to low double digits; because its FIF stays under 0.15 it had to
+      clear the 1.8x free-float market cap test in GIMI 2.3.6.1 rather than the
+      ordinary one. ICICI Prudential Life was widely expected to be deleted but
+      survived because its float factor was left unchanged.
+    sources:
+      - https://www.business-standard.com/markets/news/four-companies-enter-msci-standard-index-2-bn-passive-inflows-expected-126111201772_1.html
+      - https://www.moneycontrol.com/news/business/msci-november-rejig-lic-adani-green-coforge-and-meesho-added-pi-industries-excluded-14077462.html
+      - https://www.angelone.in/news/market-updates/msci-november-2026-rejig-lic-adani-green-coforge-meesho-added
+      - https://economictimes.com/markets/stocks/news/msci-rejig-lic-meesho-coforge-set-to-gain-from-index-inclusion-how-much-inflows-could-they-attract/articleshow/135753338.cms
+
+  2026-08:
+    type: QIR                      # Quarterly Index Review
+    announcement_date: 2026-08-12
+    effective_date: 2026-08-28
+    standard:
+      additions:
+        - ADANIENSOL               # Adani Energy Solutions, after May's reversal
+        - GROWW                    # Billionbrains Garage Ventures (Groww)
+        - LAURUSLABS
+        - LENSKART                 # Lenskart Solutions
+      deletions:
+        - ASTRAL
+        - BALKRISIND               # Balkrishna Industries
+        - SBICARD                  # SBI Cards and Payment Services
+    notes: >
+      Deletions taken from MSCI's published change list. Centrum's pre-review
+      watchlist named all four additions and correctly excluded the large low-float
+      names Adani Green and Hyundai.
+    sources:
+      - https://www.msci.com/eqb/gimi/stdindex/MSCI_Aug26_STPublicList.pdf
+      - https://businessupturn.com/finance/stock-market/nuvama-sees-laurus-labs-adani-energy-lenskart-and-groww-as-likely-msci-inclusions-in-august-2026-rejig/
+
+# Independent sell-side estimates of the India Standard size-segment cutoff.
+# Useful for calibrating `--cutoff-mode fixed`.
+cutoff_estimates:
+  2026-11:
+    # Centrum Broking, note dated around 16 Sep 2026, quoted a minimum
+    # free-float market cap boundary of ~INR 23,197 crore. Under GIMI 2.3.6.1 that
+    # threshold equals 50% of the Standard cutoff, implying a full market cap
+    # cutoff of ~INR 46,400 crore (~USD 5.0-5.3 bn at Sep/Oct 2026 FX).
+    source: Centrum Broking
+    min_ffmc_inr_crore: 23197
+    implied_full_mcap_cutoff_inr_crore: 46394
+    as_of: 2026-09-16
+    url: https://www.moneycontrol.com/news/business/markets/lic-meesho-coforge-swiggy-top-centrum-s-high-conviction-list-for-msci-india-november-review-14036314.html
