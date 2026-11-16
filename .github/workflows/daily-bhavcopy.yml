@@ -1,0 +1,63 @@
+name: Daily bhavcopy update
+
+# Keeps the committed bhavcopy day-file store current between manual review runs.
+# Runs Tue-Sat 08:00 IST (02:30 UTC) and fetches the previous day: yesterday's
+# end-of-day file is always published by then, so the exact minute does not matter -
+# which is good, because GitHub's scheduled runs are best-effort and can drift.
+#
+# Tue-Sat because fetching "yesterday" on those days covers trading days Mon-Fri;
+# running Sun/Mon would only ever reach a weekend. The job self-heals gaps anyway:
+# it fetches every day since the last one in the cache, so a skipped run is filled
+# by the next.
+#
+# Email: no custom mail is configured. GitHub automatically emails the repo owner
+# when a scheduled workflow fails, and the updater exits non-zero only on a real
+# fetch error, so that is exactly when you want to hear about it. Holidays and
+# no-op days succeed quietly and are recorded in logs/daily_bhavcopy_update.csv.
+on:
+  schedule:
+    - cron: "30 2 * * 2-6"
+  workflow_dispatch:
+
+# One run at a time, so two never race to push.
+concurrency:
+  group: daily-bhavcopy
+  cancel-in-progress: false
+
+# Needed so the job can commit the new day files and the log back to the repo.
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Update bhavcopy cache
+        id: update
+        run: python scripts/daily_bhavcopy_update.py
+
+      # Commit whatever was fetched plus the log row, even if the updater reported an
+      # error on some day - the partial progress and the error record are both worth
+      # keeping, and the job still ends failed (below) so the failure email fires.
+      - name: Commit new day files and log
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add cache/bhavcopy/*.csv logs/daily_bhavcopy_update.csv
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Daily bhavcopy update ($(date -u +%Y-%m-%d))"
+            git push
+          fi

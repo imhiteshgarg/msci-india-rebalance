@@ -3,9 +3,16 @@ __pycache__/
 *.pyc
 .pytest_cache/
 
-# Fetched market data. Regenerate by running without --offline; deliberately not
-# committed because it is large and because a stale cache silently changes results.
-cache/
+# Fetched market data. Mostly regenerable and deliberately not committed, because it
+# is large and a stale panel silently changes results. The one exception is the raw
+# daily bhavcopy files: they are the append-only durable store the daily GitHub
+# Action keeps current, so a clone can rebuild the panels with scripts/hydrate_panels.py.
+# Everything else under cache/ (the compiled panels, FX, security_info, holiday
+# marker, universe lists) stays ignored and is rebuilt from the day files on demand.
+cache/*
+!cache/bhavcopy/
+cache/bhavcopy/*
+!cache/bhavcopy/*.csv
 cache_smoke/
 
 # Generated reports.

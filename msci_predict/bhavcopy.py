@@ -183,20 +183,32 @@ class BhavcopySource:
                     # permanent fact.
                     self._record_holiday(day)
                     return None
-                text = resp.text
+                candidate = resp.text
+                # Validate before caching, not after. NSE serves the previous
+                # session's file under a holiday URL (200 + SYMB, but an older
+                # DATE1), so writing first would persist that stale file under the
+                # requested date's name - which is exactly how 51 phantom day files
+                # ended up on disk. A mismatch means the requested day was a holiday.
+                reported = _file_trade_date(candidate)
+                if reported is not None and reported != day:
+                    log.debug("%s: bhavcopy reports trade date %s, so the market was "
+                              "shut; not caching", day, reported)
+                    self._record_holiday(day)
+                    return None
+                text = candidate
                 path.write_text(text)
                 break
             if text is None:
                 log.warning("Could not fetch bhavcopy for %s", day)
                 return None
 
-        # The file has to be for the day that was asked for. Checked here rather
-        # than at download, so a file already sitting in the cache is validated too.
+        # A file already on disk still has to be for the day requested. This catches
+        # legacy phantom files written before the validate-before-write logic above.
         reported = _file_trade_date(text)
         if reported is not None and reported != day:
             log.debug(
-                "%s: bhavcopy reports trade date %s, so the market was shut; dropping",
-                day, reported,
+                "%s: cached bhavcopy reports trade date %s, so the market was shut; "
+                "dropping", day, reported,
             )
             return None
 
