@@ -61,8 +61,14 @@ Developed Markets. Getting this wrong tightens the screen materially.
 
 `USD 585 mn` is the figure MSCI published for the August 2026 review; it is the full
 market cap of the company sitting at 99% cumulative free-float coverage of the
-Developed Markets Equity Universe, and it is revised each review. Update it in
-`config/parameters.yaml` when MSCI does.
+Developed Markets Equity Universe, and it is revised each review.
+
+**The figures quoted through §1 are the August 2026 ones, to match the methodology
+edition cited above.** `config/parameters.yaml` has since moved on to the November
+2026 book: Equity Universe Minimum Size **USD 621 mn**, DM Standard reference
+**USD 17,373 mn**, so the EM Standard range is **USD 4,343 – 9,989 mn**. The live
+config is always the authority; refresh it with
+`scripts/update_msci_parameters.py` rather than reading numbers out of this page.
 
 ### 1.3 Liquidity: the ATVR formula
 
@@ -455,7 +461,7 @@ dates), and `backtest.txt`.
 
 ### 4.3 How membership is determined, and why it is the main accuracy lever
 
-Recall is already 100% on both reviews tested. Every remaining error is a false
+Recall is already 100% on all four reviews tested. Every remaining error is a false
 positive, and almost all of them come from one thing: the model not knowing who is
 already in the index.
 
@@ -579,8 +585,10 @@ Full worked example:
 3. **Update `config/parameters.yaml` every review.** The Equity Universe Minimum Size
    and the Global Minimum Size References are republished each time and drift with
    global markets.
-4. **Add more reviews to `config/actual_reviews.yaml`.** Two reviews is a start, not
-   evidence. Six quarters would tell you whether the 100% recall holds.
+4. **Add more reviews to `config/actual_reviews.yaml`.** Four are recorded (Feb, May,
+   Aug and Nov 2026). Six quarters would tell you whether the 100% recall holds, and
+   would also pin the cut-off band and the band-share threshold, which are currently
+   fitted on those four and are the least well-established settings in the model.
 5. **Use `--trace-membership SYMBOL`** when a known addition is reported as an
    existing member. It prints the simulation review by review and localises which
    input is wrong, which is how the Coforge and LIC problems were found.
@@ -754,9 +762,10 @@ projected backwards.
 .venv/bin/python -m pytest tests/ -q
 ```
 
-28 tests covering the ATVR and Frequency of Trading formulas, cut-off derivation and
-clamping, the add/delete buffers, the low-FIF and large-IPO paths, the EPI screen, and
-the review-date arithmetic including MSCI's own worked preponement example.
+38 tests covering the ATVR and Frequency of Trading formulas, cut-off derivation and
+clamping, the add/delete buffers, the low-FIF and large-IPO paths, the EPI screen, the
+free-float reliability gate, and the review-date arithmetic including MSCI's own worked
+preponement example.
 
 ---
 
@@ -769,6 +778,8 @@ config/free_float_history.csv       dated float changes - the highest-value inpu
 config/free_float_overrides.csv     undated float corrections
 config/known_non_constituents.csv   names known not to be members, with as_of dates
 config/msci_india_constituents.csv  real membership, built by the INDA importer
+config/strategic_gap.csv            SEBI public holding vs the float estimate, in pp
+config/msci_implied_fif.csv         MSCI's own float factors, backed out of INDA weights
 msci_predict/rules.py               the maths: pure functions, no I/O, fully tested
 msci_predict/calendar_rules.py      the three cut-off dates per GIMI 3.1.9
 msci_predict/data.py                NSE universe, prices, share counts, FX, caching
@@ -782,6 +793,8 @@ scripts/derive_historical_membership.py  roll INDA holdings back to a past revie
 scripts/update_msci_parameters.py   pull current MSCI size thresholds from the GIMI book
 scripts/import_inda_holdings.py     convert an INDA holdings download to a symbol list
 scripts/calibrate_cutoff.py         fit the size cut-off to a known outcome
+scripts/fetch_shareholding_history.py    dated float series from NSE quarterly filings
+scripts/derive_msci_fif.py          back MSCI's float factors out of the INDA weights
 scripts/smoke_test.py               15-symbol end-to-end check, runs in seconds
 research/                           the source PDFs and extracted text
 ```

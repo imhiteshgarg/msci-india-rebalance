@@ -124,6 +124,39 @@ def parse_quarters(records: list[dict]) -> list[tuple[datetime, float]]:
     return sorted(out.items())
 
 
+GAP_NUMERIC_FIELDS = ("nse_public_pct", "estimated_fif_pct", "strategic_gap_pp")
+
+
+def _restore_gap_row(row: dict, fields: list[str]) -> dict | None:
+    """Re-read a previously written strategic-gap row with its numeric types intact.
+
+    Rows read back out of the CSV are strings, but they are merged with the rows
+    computed in this run and the merged list is then sorted and formatted as
+    numbers. Leaving them as strings raises as soon as the gap file holds a symbol
+    outside the current run - which is every --symbols or --limit run, i.e. exactly
+    what the runbook prescribes.
+
+    A row whose numbers will not parse is dropped with a warning rather than
+    defaulted to zero: a zero strategic gap is the most trustworthy state there is,
+    so inventing one would quietly misreport the symbol the model is least sure of.
+    """
+    out: dict = {k: (row.get(k) or "").strip() for k in fields}
+    for key in GAP_NUMERIC_FIELDS:
+        try:
+            out[key] = float(out[key])
+        except ValueError:
+            log.warning(
+                "Dropping unparsable strategic-gap row for %s (%s=%r)",
+                out.get("symbol") or "?", key, out[key],
+            )
+            return None
+    try:
+        out["quarters_available"] = int(out["quarters_available"])
+    except ValueError:
+        out["quarters_available"] = 0
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -294,7 +327,9 @@ def main() -> int:
             for row in csv.DictReader(fh):
                 sym = (row.get("symbol") or "").strip().upper()
                 if sym and not sym.startswith("#") and sym not in fetched:
-                    kept.append({k: row.get(k, "") for k in gap_fields})
+                    restored = _restore_gap_row(row, gap_fields)
+                    if restored is not None:
+                        kept.append(restored)
     if kept:
         log.info("Kept %d existing strategic-gap row(s) for symbols not in this run", len(kept))
 

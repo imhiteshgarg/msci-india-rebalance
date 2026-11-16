@@ -146,6 +146,44 @@ def extract_gmsr(text: str) -> tuple[dict[str, float] | None, str]:
     return out, "matched on the DM/EM halving relationship"
 
 
+_REVIEW_MONTH_ABBR = {2: "Feb", 5: "May", 8: "Aug", 11: "Nov"}
+
+
+def _provenance_stamps(review: str) -> dict[str, str]:
+    """The gmsr.as_of and gmsr.published_at_review values implied by --review.
+
+    Neither stamp is read by the model, but leaving them untouched while patching
+    the four numbers beneath them is worse than carrying no stamp at all: it is how
+    config/parameters_2026-02.yaml and its siblings all ended up holding their own
+    review's size values while claiming to come from the November 2026 book.
+
+    Both are derivable. `as_of` is the first candidate price cut-off date for the
+    review, which is the convention the existing value already follows - the
+    November 2026 review's window opens on 19 October 2026, and that is exactly
+    what sits in the file today.
+
+    Returns an empty dict when --review was not given, since --pdf mode has no
+    review to derive from and guessing would be worse than leaving the stamps alone.
+    """
+    if not review:
+        print("  No --review given, so gmsr.as_of and gmsr.published_at_review are "
+              "left unchanged. Set them by hand.")
+        return {}
+    from msci_predict.calendar_rules import build_review_calendar, parse_review_label
+
+    try:
+        year, month = parse_review_label(review)
+    except ValueError as exc:
+        print(f"  Could not read a review from {review!r} ({exc}), so the provenance "
+              "stamps are left unchanged.")
+        return {}
+    cal = build_review_calendar(year, month)
+    return {
+        "as_of": cal.price_cutoff_candidates[0].isoformat(),
+        "published_at_review": f"{_REVIEW_MONTH_ABBR[month]} {year}",
+    }
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -236,14 +274,18 @@ def main() -> int:
         "standard": gmsr["standard"],
         "imi": gmsr["imi"],
     }
+    stamps = _provenance_stamps(args.review)
     applied: set[str] = set()
+    applied_stamps: set[str] = set()
     in_dm = False
+    in_gmsr = False
     for i, line in enumerate(lines):
         stripped = line.strip()
         if stripped.startswith("dm:"):
             in_dm = True
         elif stripped and not line.startswith((" ", "\t")):
             in_dm = False
+            in_gmsr = stripped.startswith("gmsr:")
         for key, value in targets.items():
             if key in applied:
                 continue
@@ -254,13 +296,27 @@ def main() -> int:
                 lines[i] = f"{m.group(1)}{value:.1f}{m.group(3)}\n"
                 applied.add(key)
                 break
+        if not in_gmsr:
+            continue
+        for key, value in stamps.items():
+            if key in applied_stamps:
+                continue
+            m = re.match(rf'^(\s*{re.escape(key)}:\s*)"[^"]*"(.*)$', line)
+            if m:
+                lines[i] = f'{m.group(1)}"{value}"{m.group(2)}\n'
+                applied_stamps.add(key)
+                break
     missing = set(targets) - applied
     if missing:
         raise SystemExit(f"Could not locate these keys in {args.params}: {sorted(missing)}")
+    for key in sorted(set(stamps) - applied_stamps):
+        print(f"  Warning: could not locate gmsr.{key} to stamp; set it by hand.")
 
     args.params.write_text("".join(lines))
     print()
     print(f"Updated {args.params}")
+    for key in sorted(applied_stamps):
+        print(f"  gmsr.{key} stamped as {stamps[key]!r}")
     print("Now re-calibrate the cut-off, since the size range has moved:")
     print("  .venv/bin/python scripts/calibrate_cutoff.py --review <last known review>")
     return 0
