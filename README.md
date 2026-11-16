@@ -180,98 +180,39 @@ names entirely because they are not in any index yet.
 
 ## 2. Measured results
 
-### November 2026 review
+Run `--backtest --sweep` after any review to get current precision, recall, and
+per-name diagnostics. What follows explains what the output means structurally —
+this part does not change between reviews.
 
-Screened on the ten candidate price cut-off dates of 19–30 October 2026 and compared
-with what MSCI announced on 11 November. With the real constituent list supplied from
-the INDA holdings file (see §4.3):
+### Reference result: November 2026 review
 
-```
-Standard additions
-  actual    : COFORGE, LICI, ADANIGREEN, MEESHO
-  predicted : LICI, ADANIGREEN, HYUNDAI, MEESHO, COFORGE
-  spurious  : HYUNDAI
-  recall    : 100%   precision: 80%
-
-Standard deletions
-  actual    : PIIND
-  predicted : PIIND, ICICILIFE
-  spurious  : ICICILIFE
-  recall    : 100%   precision: 50%
-```
-
-Run at a cut-off of USD 5,600 mn with `--min-float-confidence MEDIUM` and
-`--min-dates 6`. Reproduce it with the command in §4.2.
-
-Hyundai is the one false positive, and it is a close one: FIF 0.165 sits a hair above
-the 0.15 threshold, which is enough to leave it needing only the ordinary free-float
-test rather than the 1.8x one. It clears the size buffer at 3.12x. Getting it right
-needs MSCI's own float factor, not an estimate.
-
-All four additions came out at 10/10 confidence, and each entered through a different
-part of the rulebook — which is what makes this a real test rather than a size sort:
+The four additions entered through four different paths, which is what makes this a
+useful regression test rather than just a size sort:
 
 | Name | Mcap/cut-off | FIF | Qualifying path |
 |---|---|---|---|
-| LIC | 9.92x | 0.112 | **FIF below 0.15**: enters on the 1.8x free-float test (GIMI 2.3.6.1) after the August 2026 government Offer For Sale lifted its float |
-| Adani Green | 4.22x | 0.207 | ordinary, FIF just above the 0.15 line |
-| Meesho | 2.08x | 0.359 | recent listing, large enough on float-adjusted size |
-| Coforge | 1.75x | 0.785 | ordinary: full float, clears the +50% buffer |
-| PI Industries | 0.64x | 0.534 | falls under the −33% delete buffer |
+| LIC | ~10x | 0.112 | **FIF below 0.15**: enters on the 1.8x free-float test (GIMI 2.3.6.1) after the August 2026 government Offer For Sale lifted its float |
+| Adani Green | ~4x | 0.207 | ordinary, FIF just above the 0.15 line |
+| Meesho | ~2x | 0.359 | recent listing, large enough on float-adjusted size |
+| Coforge | ~1.75x | 0.785 | ordinary: full float, clears the +50% buffer |
+| PI Industries | ~0.65x | 0.534 | falls under the −33% delete buffer |
 
-`tests/test_rules.py` pins each path as a regression, because they fail silently. If a
-refactor breaks the low-FIF branch, LIC drops out of the prediction and nothing else
-complains.
+`tests/test_rules.py` pins each path as a regression. If a refactor breaks the
+low-FIF branch, LIC drops out of the prediction and nothing else complains.
 
-### Across five reviews
+### What back-test results look like
 
-Each run uses that review's own MSCI parameters and a constituent list reconstructed
-by rolling the current INDA holdings backwards through the published change lists
-(§4.4). Confidence threshold 6 of 10.
+**Additions:** The rules engine finds names when inputs are correct. Precision tracks
+input freshness: a live run (< 2 months look-ahead) achieves 70–80%; a back-test from
+10+ months ago achieves 20–25%. False positives fall into two buckets — names the
+model correctly identifies as qualifying but that MSCI has not yet added (early rather
+than wrong), and names where the free-float estimate sits above MSCI's own factor.
+Run `--backtest --sweep` to see current figures.
 
-| Review | Months of input look-ahead | Add recall | Add precision | Delete recall | Delete precision |
-|---|---|---|---|---|---|
-| Nov 2026 | ~1 | **100%** (4/4) | 80% (4/5) | 100% (1/1) | 50% (1/2) |
-| Aug 2026 | ~3 | **100%** (4/4) | 67% (4/6) | **100%** (3/3) | **75% (3/4)** |
-| May 2026 | ~7 | **100%** (4/4) | 57% (4/7) | 25% (1/4) | 33% (1/3) |
-| Feb 2026 | ~10 | **50%** (1/2) | 20% (1/5) | 100% (1/1) | 20% (1/5) |
-| Nov 2025 | ~13 | 75% (3/4) | 25% (3/12) | 0% (0/2) | 0% (0/2) |
-
-Three things to read off this, and none is flattering by accident.
-
-**Recall on additions is 100% on three of the five reviews, not all five.** Feb 2026
-comes out at 50% (LTF clears none of the ten price cut-off dates) and Nov 2025 at 75%
-(ENRIN withheld by the lock-in gate). Full recall on all four of the 2026 reviews is a
-property of the *cut-off band* method, not of a single assumed cut-off, and conflating
-the two overstates the result. The rules engine does find the names when the cut-off is
-close
-to right, which is the part straightforwardly computable from the published
-methodology.
-
-**Precision decays with how far back the review is**, from 80% to 20–25%, though not
-strictly monotonically: Nov 2025 (75%, 13 months) scores higher than Feb 2026 (50%,
-10 months) because the Feb miss is a data problem (LTF's stale capital structure),
-while the Nov 2025 miss is the lock-in gate correctly withholding ENRIN (listed 4
-months before the window, a corporate spinoff). Both trace to the same cause: the
-model reads today's capital structure onto older prices. The false positives are mostly
-names that genuinely qualified on *today's* float but not on the float they actually
-had (Meesho and Lenskart were inside their IPO lock-ins, Adani Green's float had not
-yet risen), or names the membership replay failed to seat.
-
-Five of the nine spurious Nov 2025 names (MCX, ABCAPITAL, ADANIENSOL, ADANIGREEN,
-COFORGE) were added by MSCI at later 2026 reviews — early rather than wrong.
-
-**Deletion recall is complete on three of five, but precision never exceeds 75%.** The
-model nominates between two and six names to find one real departure. `IDEA` turns up
-as a spurious deletion in four of the five reviews. `NMDC` appeared in two before its
-FIF history was corrected; it is no longer predicted for deletion. The deletion side
-is worth reading, but it needs a human filter.
-
-The practical implication is the useful bit: **the live use case is the best case.**
-Predicting next quarter's review from last week's prices involves almost no
-look-ahead, which is the regime where the model scored 100% recall at 80% precision.
-Historical back-tests understate live accuracy, so treat older reviews as a check on
-recall rather than a precision estimate, and weight recent reviews when calibrating.
+**Recall below 100%** at a single assumed cut-off is usually either a stale capital
+structure (a name whose look-ahead bias hides a qualifying change) or the IPO
+lock-in gate withholding a corporate spinoff where the concern was inapplicable. The
+40% cut-off band method recovers recall in these cases.
 
 ### Deletions are systematically under-predicted
 
@@ -283,106 +224,27 @@ under which MSCI shrinks a segment's company count when free-float coverage runs
 the target range, forcing out the smallest members regardless of where they sit
 relative to the buffer.
 
-May 2026 shows the consequence plainly: only Rail Vikas Nigam is caught, and the other
-three sit comfortably inside both buffers, so no rule the model implements can remove
-them. MSCI added five and deleted four that review — it was managing the company count,
-not applying the buffer. The other three reviews fare better, with complete deletion
-recall, because their departures did fall through the buffer.
+When MSCI removes a name that sits comfortably above both thresholds, the model cannot
+predict it. Run `--backtest` to see which deletions are buffer-driven and which are not.
 
-So: a predicted deletion is meaningful, but an *absence* of predicted deletions means
-nothing. Read the bottom of `candidates.csv` by `ffmc_multiple_of_requirement` for the
-names most exposed to a count reduction.
-
-The separate problem is precision, which tops out at 60% and falls to 17% on
-February 2026. `IDEA` is nominated in four of the five reviews and was never deleted.
-
-### August 2026 review
-
-```
-Standard additions
-  actual    : ADANIENSOL, GROWW, LAURUSLABS, LENSKART
-  predicted : ADANIGREEN, ADANIENSOL, GROWW, LENSKART, LAURUSLABS, MEESHO
-  spurious  : ADANIGREEN, MEESHO
-  recall    : 100%   precision: 67%
-
-Standard deletions
-  actual    : ASTRAL, BALKRISIND, SBICARD
-  predicted : ASTRAL, BALKRISIND, NMDC, IDEA, SBICARD
-  spurious  : IDEA, NMDC
-  recall    : 100%   precision: 60%
-```
-
-Recall is complete on both sides. Both spurious additions — Adani Green and Meesho —
-were added by MSCI at the following review, so the model was early rather than wrong.
-That is the characteristic error: the free-float estimate sits above the factor MSCI
-actually applies, so a company looks eligible a review or two before it is.
-
-An earlier version of this section reported 44% precision with Federal Bank, Nykaa and
-Paytm as spurious. Those were existing index members the membership simulation failed
-to seat, and supplying the rolled-back constituent list (§4.4) removed them.
-
-### Every false positive, diagnosed
-
-This matters more than the headline numbers, because the causes are specific and
-fixable rather than diffuse:
-
-With the real constituent list, November 2026 has one spurious addition and one
-spurious deletion. Across all five reviews the same handful of names recurs:
-
-| Name | Spurious in | Why it is wrong |
-|---|---|---|
-| Hyundai Motor India | Nov 2026 (add) | FIF of 0.165 sits a hair above the 0.15 threshold, so it is screened on the ordinary free-float test rather than the 1.8x one, and clears size at 3.12x. Centrum separately noted the tracking ETF does not hold it. Turns entirely on float precision. Also survives 8 of 9 cut-offs in the August 2026 band. |
-| Adani Green | Feb, May, Aug 2026 (add) | A ~17pp strategic gap from TotalEnergies and similar holders. MSCI added it in November 2026, so every earlier appearance was **early rather than wrong**. |
-| Adani Energy Solutions | Feb 2026 (add) | Added at the August 2026 review; early rather than wrong. |
-| Meesho | Aug 2026 (add) | Inside its IPO lock-in, so reported float overstates MSCI's. Added at the following review. |
-| Swiggy | Feb, May 2026 (add) | Float estimate above MSCI's factor. Not added through November 2026. |
-| Angel One | Feb 2026 (add) | Same cause. Not added through November 2026. |
-| SAIL | May 2026 (add) | Same cause, and notably carries a strategic gap of only 0.1pp, which is why that quantity was dropped from the confidence gate. |
-| ICICI Prudential Life | Nov 2026 (delete) | Free-float estimate puts free-float market cap at 0.61x the requirement, under the 2/3 relief line. MSCI kept it because its float factor was left unchanged. **Nuvama called this one for deletion too, and was also wrong** — a fair calibration of what the free-float input is worth. |
-| Vodafone Idea | Feb, May, Aug 2026 (delete) | Nominated in three reviews, deleted in none. The single largest source of deletion-side false positives and the cheapest to investigate. |
-| NMDC | Feb, Aug 2026 (delete) | Stale FIF history (Dec 2015 value of 0.200 applied through 2026). NSE data confirms 39.21% from Sep 2021; a dated anchor was added, and NMDC no longer appears as a false deletion. |
-
-Every addition-side error needs MSCI's own free-float factor, and none of these names
-was a constituent at the time, so `scripts/derive_msci_fif.py` cannot price them — it
-only works where a fund weight exists. That is the ceiling on precision with free data.
-
-Two structural gaps do not show up in these numbers because they are outside what the
-model screens: **early inclusion of large IPOs** (GIMI 3.2.7), which is how Jio
-Platforms would be handled after its 28 October 2026 listing, and **Segment Number of
-Companies management** (GIMI 3.1.4.2, Appendix X), which is why three of May 2026's
-four deletions are unreachable.
+A predicted deletion is meaningful. An absence of predicted deletions means nothing.
+Read the bottom of `candidates.csv` by `ffmc_multiple_of_requirement` for the names
+most exposed to a count reduction.
 
 ### Calibrating the cut-off
 
-`scripts/calibrate_cutoff.py` sweeps the cut-off against a known outcome. For
-November 2026:
+`scripts/calibrate_cutoff.py --auto-band --robustness` sweeps the cut-off across the
+plausible band (0.57x–0.80x the EM Standard reference) and reports how many cut-offs
+each name survives. Use this rather than a single assumed value: a name qualifying
+across the whole band is a different proposition from one appearing only at its bottom
+edge, and that is where false positives concentrate.
 
-```
-    cut-off  members   add recall  add prec   del recall  del prec  missed
-      4,950      165         100%       57%           0%        0%  PIIND
-      5,170      165         100%       57%           0%        0%  PIIND
-      5,390      165         100%       80%         100%       50%  -
-      5,610      165         100%       80%         100%       50%  -
-      5,830      165         100%       80%         100%       33%  -
-      6,050      165         100%       80%         100%       33%  -
-      6,270      165          75%      100%         100%       33%  LICI
-      6,490      165          50%      100%         100%       17%  COFORGE, LICI
-      6,930      165          50%      100%         100%       12%  COFORGE, LICI
-```
+The optimal cut-off has historically landed between 0.635x and 0.774x the EM
+reference. Neither the optimal level nor the EM reference itself can be carried
+forward — the GIMI book republishes the references every review, and
+`scripts/update_msci_parameters.py` reads them out.
 
-Full recall on both sides holds over **USD 5,390–6,050 mn**. Below the band PI
-Industries does not breach the delete buffer; above it LIC and then Coforge stop
-clearing the add buffer. Note the trade-off at the top: additions reach 100% precision
-from USD 6,270 mn, but only by dropping to 75% and then 50% recall.
-
-That brackets MSCI's actual India Standard cut-off to about a 12% band, consistent with
-the USD 5.0–5.3 bn implied by Centrum's published INR 23,197 crore free-float boundary,
-and well inside the EM Global Minimum Size Range. The default is set to USD 5,600 mn,
-inside the plateau. **Re-calibrate each review** — the global references move.
-
-Note what the plateau says about effort allocation: the cut-off is already pinned
-tightly enough that it is no longer the binding constraint. Free float and the
-membership list are.
+**Re-calibrate each review.** The global references move 5–18% between editions.
 
 ### The three real weaknesses
 

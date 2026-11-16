@@ -155,35 +155,17 @@ Also read the two secondary tables:
 
 ### What to expect
 
-Precision tracks how fresh the inputs are, and it tracks it tightly:
+**Precision tracks input freshness.** A live run with less than two months of
+look-ahead achieves 70–80% precision on additions; a back-test from 10+ months back
+achieves 20–25%. Run `calibrate_cutoff.py --auto-band --robustness` after each review
+to see current figures. Add the result to `config/actual_reviews.yaml` to keep the
+history growing.
 
-Additions, at a 40% band share:
-
-| Back-tested review | Months from cut-off to float snapshot | Precision | Recall |
-|---|---|---|---|
-| Feb 2026 | ~10 | 20% | 100% |
-| May 2026 | ~7 | 50% | 100% |
-| Aug 2026 | ~3 | 50% | 100% |
-| Nov 2026 | ~1 | 80% | 100% |
-
-A live run in late January sits at the **~1 month** end, so expect the favourable end
-of that range. The older back-tests measure how much the inputs rot, not how the model
-performs live.
-
-Recall is 100% on all four only via the band. At a single assumed cut-off February
-2026 drops to 50%, because L&T Finance clears none of the ten price cut-off dates
-there. That is the reason step 2 of this phase is not optional.
-
-**Deletions: good recall, poor precision.** Measured recall is 100% on Feb, Aug and
-Nov 2026 and 25% on May, but precision runs 17% / 33% / 60% / 50% — so expect to sift
-two to six names to find one real departure, and treat `IDEA` and `NMDC` with
-suspicion: they are nominated in three and two reviews respectively, and were
-deleted in none.
-
-The Segment Number of Companies mechanism (GIMI
-3.1.4.2, Appendix X) is not implemented, so deletions driven by company-count
-management rather than the buffer are invisible. A predicted deletion means something;
-an absence of predicted deletions means nothing.
+**Deletions: good recall when names breach the buffer, blind to company-count
+management.** The Segment Number of Companies mechanism (GIMI 3.1.4.2, Appendix X) is
+not implemented, so deletions driven by company-count management rather than the
+buffer are invisible. A predicted deletion means something; an absence of predicted
+deletions means nothing.
 
 ---
 
