@@ -81,16 +81,25 @@ company looks eligible sooner than it is.
 
 | Review | Delete recall | Delete precision |
 |---|---|---|
-| Feb 2026 | **100%** (1 of 1) | 17% (1 of 6) |
+| Feb 2026 | **100%** (1 of 1) | 20% (1 of 5) |
 | May 2026 | 25% (1 of 4) | 33% (1 of 3) |
-| Aug 2026 | **100%** (3 of 3) | 60% (3 of 5) |
+| Aug 2026 | **100%** (3 of 3) | **75% (3 of 4)** |
 | Nov 2026 | **100%** (1 of 1) | 50% (1 of 2) |
 
-Recall is now complete on three of the four reviews, which is a real improvement on
-the 0% this file first recorded, but precision is poor throughout: the model nominates
-two to six names to find one. `IDEA` is a spurious deletion in three of the four
-reviews and `NMDC` in two, and neither was ever deleted, which is the pattern to
-chase first.
+NMDC was removed from the deletion predictions in Feb and Aug by adding a dated FIF
+anchor at Sep 2021 (NSE confirms 39.21% public holding stable from Sep 2021 through
+Sep 2026, with the transition from the government's earlier 80% stake happening
+between Dec 2015 and Sep 2021). The May result is unchanged because NMDC was not
+nominated at the USD 5,000mn cut-off.
+
+`IDEA` remains a spurious deletion in Feb, May and Aug 2026. The delta method
+produces FIF = 0.126 for those periods because of its 48.7pp strategic gap — the
+government holds a ~33% stake that SEBI classifies as "public" but MSCI would treat
+as strategic, so changes in SEBI public holding don't map to changes in MSCI free
+float. MSCI's actual FIF is ~0.246 (backed out from the INDA weight). The MSCI-implied
+FIF has been added to `free_float_history.csv` with an effective date of Nov 2026, so
+IDEA is correctly held in for the **live Feb 2027 prediction** and all future reviews,
+but cannot be repaired for the historical back-tests without data that doesn't exist.
 
 The May result shows the remaining structural gap: the
 Segment Number of Companies mechanism (GIMI 3.1.4.2, Appendix X) is not implemented,
@@ -229,26 +238,17 @@ re-run.
 
 ## Open items
 
-- **LIC's share count is unverified.** Yahoo reports 12.65bn shares, exactly twice
-  LIC's 6.32bn issued shares, and its reported market cap is internally consistent
-  with the larger figure. The model's LIC calls match MSCI's actual decisions at the
-  larger number, which is weak evidence for it, but worth confirming from a filing.
-  36 of 1,319 symbols show share count × close disagreeing with reported market cap by
-  more than 25%; none is currently an index-decision candidate.
-- **Deletions remain under-predicted** because the Segment Number of Companies
-  mechanism (GIMI 3.1.4.2, Appendix X) is not implemented. A predicted deletion means
-  something; an absence of predicted deletions means nothing.
-- **All four recorded reviews are now scored.** Feb, May, Aug and Nov 2026 each have a
-  membership snapshot and a parameters snapshot, and all four were re-measured after
-  the phantom-day fix. Four is still a small sample for fitting the cut-off band and
-  the 40% band-share threshold; those two settings remain the least well-established
+- **Deletion precision still improvable.** `IDEA` remains a spurious deletion in three
+  historical reviews (Feb/May/Aug 2026) because its 48.7pp strategic gap means NSE
+  public holding changes don't track MSCI free float changes. The delta method is
+  fundamentally misspecified for IDEA in this period. No fix without MSCI's actual
+  dated FIF, which is not public for non-current-constituents.
+- **Deletions remain structurally under-predicted** because the Segment Number of
+  Companies mechanism (GIMI 3.1.4.2, Appendix X) is not implemented. A predicted
+  deletion means something; an absence of predicted deletions means nothing.
+- **Four recorded reviews** is a small sample for fitting the cut-off band and the
+  40% band-share threshold. Those two settings remain the least well-established
   part of the model.
-- **February 2026 recall is 50% at a single cut-off**, not 100%. L&T Finance clears
-  none of the ten price cut-off dates at USD 5,400 mn and only 5 of 10 cut-offs in the
-  band. Full recall there depends on the band method.
-- **Deletion precision is poor** even where recall is complete: 17% on Feb 2026, 33%
-  on May, 60% on Aug, 50% on Nov. `IDEA` is spurious in three of the four reviews and
-  `NMDC` in two, which is the cheapest thread to pull.
 
 ## Next commands
 

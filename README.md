@@ -232,9 +232,9 @@ by rolling the current INDA holdings backwards through the published change list
 | Review | Months of input look-ahead | Add recall | Add precision | Delete recall | Delete precision |
 |---|---|---|---|---|---|
 | Nov 2026 | ~1 | **100%** (4/4) | 80% (4/5) | 100% (1/1) | 50% (1/2) |
-| Aug 2026 | ~3 | **100%** (4/4) | 67% (4/6) | **100%** (3/3) | 60% (3/5) |
+| Aug 2026 | ~3 | **100%** (4/4) | 67% (4/6) | **100%** (3/3) | **75% (3/4)** |
 | May 2026 | ~7 | **100%** (4/4) | 57% (4/7) | 25% (1/4) | 33% (1/3) |
-| Feb 2026 | ~10 | **50%** (1/2) | 20% (1/5) | 100% (1/1) | 17% (1/6) |
+| Feb 2026 | ~10 | **50%** (1/2) | 20% (1/5) | 100% (1/1) | 20% (1/5) |
 
 Three things to read off this, and none is flattering by accident.
 
@@ -287,8 +287,9 @@ nothing. Read the bottom of `candidates.csv` by `ffmc_multiple_of_requirement` f
 names most exposed to a count reduction.
 
 The separate problem is precision, which tops out at 60% and falls to 17% on
-February 2026. `IDEA` is nominated in three of the four reviews and `NMDC` in two,
-and neither was ever deleted, so they are the first place to look.
+February 2026. `IDEA` is nominated in three of the four reviews and was never deleted.
+`NMDC` appeared in two reviews before its dated FIF history was corrected; it is no
+longer predicted for deletion with the current inputs.
 
 ### August 2026 review
 
@@ -334,7 +335,7 @@ spurious deletion. Across all four reviews the same handful of names recurs:
 | SAIL | May 2026 (add) | Same cause, and notably carries a strategic gap of only 0.1pp, which is why that quantity was dropped from the confidence gate. |
 | ICICI Prudential Life | Nov 2026 (delete) | Free-float estimate puts free-float market cap at 0.61x the requirement, under the 2/3 relief line. MSCI kept it because its float factor was left unchanged. **Nuvama called this one for deletion too, and was also wrong** — a fair calibration of what the free-float input is worth. |
 | Vodafone Idea | Feb, May, Aug 2026 (delete) | Nominated in three reviews, deleted in none. The single largest source of deletion-side false positives and the cheapest to investigate. |
-| NMDC | Feb, Aug 2026 (delete) | Same pattern, two reviews. |
+| NMDC | Feb, Aug 2026 (delete) | Stale FIF history (Dec 2015 value of 0.200 applied through 2026). NSE data confirms 39.21% from Sep 2021; a dated anchor was added, and NMDC no longer appears as a false deletion. |
 
 Every addition-side error needs MSCI's own free-float factor, and none of these names
 was a constituent at the time, so `scripts/derive_msci_fif.py` cannot price them — it
