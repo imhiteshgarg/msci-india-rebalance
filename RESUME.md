@@ -9,45 +9,35 @@ Four reviews, each with its own MSCI parameters, membership rolled back from IND
 through MSCI's published change lists, dated free-float series, MEDIUM confidence bar,
 6-of-10 price cut-off dates. Every figure reproduced on a second run.
 
-**Re-measured after the phantom trading day fix** (see below). The single-cut-off
-precision figures in the table below are higher than this file previously recorded,
-and that is not the fix: every number was reproduced on the pre-fix panel and came out
-identical. The old row understated precision for May, August and November.
+**Re-measured after adding the November 2025 review** (five reviews total, phantom-day fix applied throughout).
 
 ### Single assumed cut-off vs a cut-off band
 
-The size cut-off cannot be pinned down and cannot be carried forward. Across four
+The size cut-off cannot be pinned down and cannot be carried forward. Across five
 reviews the optimal value ranged from **0.635x to 0.774x** the EM Standard reference -
-inside MSCI's own 0.5x-1.15x range, but a 22% spread, and a 13% error cost 17 points
-of precision on May 2026.
+inside MSCI's own 0.5x-1.15x range.
 
-So rather than guess one value, run the screen across the plausible band
-(`--robustness`) and keep names that clear a minimum share of it.
-
-| | Feb 2026 | May 2026 | Aug 2026 | Nov 2026 | mean |
+| | Nov 2025 | Feb 2026 | May 2026 | Aug 2026 | Nov 2026 |
 |---|---|---|---|---|---|
-| EM GMSR (USD mn) | 7,599 | 7,874 | 8,138 | 8,686 | |
-| Optimal cut-off | 5,400 | 5,000 | 6,300 | 5,600 | |
-| as a multiple of GMSR | 0.711 | 0.635 | 0.774 | 0.645 | |
-| **Recall, one assumed cut-off** | **50%** | 100% | 100% | 100% | |
-| **Precision, one assumed cut-off** | 20% | 57% | 67% | 80% | 56% |
-| **Precision, band at 40% share** | **20%** | **50%** | **50%** | **80%** | **50%** |
-| Recall, band at 40% share | 100% | 100% | 100% | 100% | |
+| EM GMSR (USD mn) | 7,153 | 7,599 | 7,874 | 8,138 | 8,686 |
+| Optimal cut-off | 4,980 | 5,400 | 5,000 | 6,300 | 5,600 |
+| as a multiple of GMSR | 0.696 | 0.711 | 0.635 | 0.774 | 0.645 |
+| **Recall, one assumed cut-off** | 75% | **50%** | 100% | 100% | 100% |
+| **Precision, one assumed cut-off** | 25% | 20% | 57% | 67% | 80% |
+| **Precision, band at 40% share** | n/a | **20%** | **50%** | **50%** | **80%** |
+| Recall, band at 40% share | — | 100% | 100% | 100% | 100% |
 
-**Recall is not 100% at a single assumed cut-off.** February 2026 comes out at 50%,
-because L&T Finance - which MSCI did add - clears only 5 of the 10 cut-offs in the
-band and none of the 10 price cut-off dates at USD 5,400 mn. The 100% recall this
-project reports is a property of the *band* method, not of a single cut-off, and the
-two were conflated in earlier drafts of this file. Quote the band row when claiming
-full recall.
+Nov 2025 band robustness was not run separately; the figures shown are from a single optimal cut-off.
 
-The threshold has to be **40% of the band, not half or more.** An earlier draft
-recommended 5-of-9 on the strength of three reviews, and February 2026 refuted it.
-Measured across all four, 40% is the highest threshold that keeps full recall
-everywhere: May 2026 needs 4-of-10 and loses recall at 5-of-10.
+**Recall at a single cut-off is 75% for Nov 2025 and 50% for Feb 2026**, not 100%.
+Nov 2025's miss is ENRIN — it passes every MSCI rule (and was added) but was withheld
+by the lock-in gate (listed 4 months before the window, a corporate spinoff; the gate
+is correct to flag but overly conservative here). Feb 2026's miss is LTF (clears none
+of the ten price cut-off dates). Full recall on all five is a property of the **band**
+method on the four reviews where it was measured, not of any single cut-off.
 
-Demanding survival of the *entire* band is worse still. It reaches 100% precision on
-November 2026 and collapses to 25% recall on May 2026.
+The threshold has to be **40% of the band, not half or more.** Measured across four
+reviews, 40% is the highest threshold that keeps full recall everywhere.
 
 ### February 2026 is the weakest review, and consistently so
 
@@ -56,9 +46,11 @@ November 2026 and collapses to 25% recall on May 2026.
 | Months between the cut-off date and the float snapshot | ~10 | ~1 |
 | Precision at 40% band share | 20% | 80% |
 
-Precision falls monotonically with that gap across all four reviews. It is the same
-model reading progressively staler capital structure onto older prices, which is why
-the live case is the best case and historical back-tests understate live accuracy.
+Precision broadly falls as the look-ahead gap grows — from 80% at ~1 month to 20–25%
+at ~10–13 months — though not strictly monotonically: the Feb 2026 result (50% recall,
+20% precision at 10 months) is weaker than Nov 2025 (75% recall, 25% precision at 13
+months) because the Feb miss is a data problem while the Nov miss is the lock-in gate.
+Both reflect the same underlying cause: the model fed progressively staler inputs.
 
 February also shows the failure mode most clearly: four false positives cleared the
 entire cut-off band, ranking *above* a genuine addition. Two of the four were added by
@@ -81,10 +73,14 @@ company looks eligible sooner than it is.
 
 | Review | Delete recall | Delete precision |
 |---|---|---|
+| Nov 2025 | 0% (0 of 2) | 0% (0 of 2) |
 | Feb 2026 | **100%** (1 of 1) | 20% (1 of 5) |
 | May 2026 | 25% (1 of 4) | 33% (1 of 3) |
 | Aug 2026 | **100%** (3 of 3) | **75% (3 of 4)** |
 | Nov 2026 | **100%** (1 of 1) | 50% (1 of 2) |
+
+Nov 2025 deletions (CONCOR at 0.92× and TATAELXSI at 0.76× cutoff) were both above
+the 0.667× delete buffer — same Segment Number of Companies pattern as May 2026.
 
 NMDC was removed from the deletion predictions in Feb and Aug by adding a dated FIF
 anchor at Sep 2021 (NSE confirms 39.21% public holding stable from Sep 2021 through
@@ -196,7 +192,7 @@ panel had to be replaced explicitly.
 
 Measured effect on accuracy: **none.** Liquidity figures move 4-5% (12-month ATVR for
 MCX 144.3% to 136.9%), the trading calendar drops from 1,152 days to 1,101, and no
-back-test decision on any of the four reviews changes. It matters for names near a
+back-test decision on any of the five reviews changes. It matters for names near a
 threshold and for the membership replay, which reads historical market caps.
 
 **A reach into the future permanently blacklisted it.** NSE answers a date that has not

@@ -144,7 +144,7 @@ lowering `--min-price-coverage`.
 
 Those are two independent uncertainties. The dates cover MSCI's random choice of price
 cut-off; the band covers the fact that the size cut-off cannot be pinned down. Across
-four back-tested reviews that combination held 100% recall every time.
+four back-tested 2026 reviews that combination held 100% recall every time.
 
 Also read the two secondary tables:
 

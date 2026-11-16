@@ -6,6 +6,32 @@
 
 reviews:
 
+  2025-11:
+    type: SAIR
+    announcement_date: 2025-11-11
+    effective_date: 2025-11-28       # last business day of November 2025
+    standard:
+      additions:
+        - FORTIS                     # Fortis Healthcare
+        - GVT&D                      # GE Vernova T&D India
+        - PAYTM                      # One 97 Communications
+        - ENRIN                      # Siemens Energy India (listed Jun 2025; added under large-IPO waiver)
+      deletions:
+        - CONCOR                     # Container Corporation of India
+        - TATAELXSI                  # Tata Elxsi
+    notes: >
+      ENRIN (Siemens Energy India) listed in June 2025, about 4 months before the
+      price cut-off window. It qualified via the large-IPO waiver (2.42x full mcap,
+      3.75x FFMC at a cut-off of USD 5,190mn) and was flagged by the lock-in
+      reliability gate (listed <6 months ago), which correctly reflects uncertainty
+      about whether pre-listing holders were still locked in. As a corporate spinoff
+      from Siemens Ltd rather than a traditional IPO, the lock-in concern was likely
+      less relevant, and MSCI added it. CONCOR (0.92x) and TATAELXSI (0.76x) were
+      both above the 0.667x deletion buffer, consistent with Segment Number of
+      Companies management.
+    sources:
+      - https://www.msci.com/eqb/gimi/stdindex/MSCI_Nov25_STPublicList.pdf
+
   2026-02:
     type: QIR
     announcement_date: 2026-02-11

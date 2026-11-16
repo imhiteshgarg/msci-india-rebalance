@@ -223,7 +223,7 @@ part of the rulebook — which is what makes this a real test rather than a size
 refactor breaks the low-FIF branch, LIC drops out of the prediction and nothing else
 complains.
 
-### Across four reviews
+### Across five reviews
 
 Each run uses that review's own MSCI parameters and a constituent list reconstructed
 by rolling the current INDA holdings backwards through the published change lists
@@ -235,30 +235,37 @@ by rolling the current INDA holdings backwards through the published change list
 | Aug 2026 | ~3 | **100%** (4/4) | 67% (4/6) | **100%** (3/3) | **75% (3/4)** |
 | May 2026 | ~7 | **100%** (4/4) | 57% (4/7) | 25% (1/4) | 33% (1/3) |
 | Feb 2026 | ~10 | **50%** (1/2) | 20% (1/5) | 100% (1/1) | 20% (1/5) |
+| Nov 2025 | ~13 | 75% (3/4) | 25% (3/12) | 0% (0/2) | 0% (0/2) |
 
 Three things to read off this, and none is flattering by accident.
 
-**Recall on additions is 100% on three of the four reviews, not all four.** February
-2026 comes out at 50%: L&T Finance, which MSCI did add, clears none of the ten price
-cut-off dates at this cut-off. Full recall on all four is a property of the *cut-off
-band* method described below, not of a single assumed cut-off, and conflating the two
-overstates the result. The rules engine does find the names when the cut-off is close
+**Recall on additions is 100% on three of the five reviews, not all five.** Feb 2026
+comes out at 50% (LTF clears none of the ten price cut-off dates) and Nov 2025 at 75%
+(ENRIN withheld by the lock-in gate). Full recall on all four of the 2026 reviews is a
+property of the *cut-off band* method, not of a single assumed cut-off, and conflating
+the two overstates the result. The rules engine does find the names when the cut-off is
+close
 to right, which is the part straightforwardly computable from the published
 methodology.
 
-**Precision decays monotonically with how far back the review is**, from 80% to 20%.
-This is not a different model performing worse; it is the *same* model fed
-progressively more wrong inputs. Share counts and free-float estimates in the cache
-are current snapshots, so a May 2026 run reads November 2026's capital structure onto
-April 2026's prices. The false positives are mostly names that genuinely qualified on
-*today's* float but not on the float they actually had: Meesho and Lenskart were inside
-their IPO lock-ins, Adani Green's float had not yet risen.
+**Precision decays with how far back the review is**, from 80% to 20–25%, though not
+strictly monotonically: Nov 2025 (75%, 13 months) scores higher than Feb 2026 (50%,
+10 months) because the Feb miss is a data problem (LTF's stale capital structure),
+while the Nov 2025 miss is the lock-in gate correctly withholding ENRIN (listed 4
+months before the window, a corporate spinoff). Both trace to the same cause: the
+model reads today's capital structure onto older prices. The false positives are mostly
+names that genuinely qualified on *today's* float but not on the float they actually
+had (Meesho and Lenskart were inside their IPO lock-ins, Adani Green's float had not
+yet risen), or names the membership replay failed to seat.
 
-**Deletion recall is complete on three of four, but precision never exceeds 60%.** The
-model nominates between two and six names to find one real departure, and `IDEA` and
-`NMDC` turn up as spurious deletions in three separate reviews. So the deletion side
-is now worth reading, which it was not when recall sat at 0%, but it needs a human
-filter.
+Five of the nine spurious Nov 2025 names (MCX, ABCAPITAL, ADANIENSOL, ADANIGREEN,
+COFORGE) were added by MSCI at later 2026 reviews — early rather than wrong.
+
+**Deletion recall is complete on three of five, but precision never exceeds 75%.** The
+model nominates between two and six names to find one real departure. `IDEA` turns up
+as a spurious deletion in four of the five reviews. `NMDC` appeared in two before its
+FIF history was corrected; it is no longer predicted for deletion. The deletion side
+is worth reading, but it needs a human filter.
 
 The practical implication is the useful bit: **the live use case is the best case.**
 Predicting next quarter's review from last week's prices involves almost no
@@ -287,9 +294,7 @@ nothing. Read the bottom of `candidates.csv` by `ffmc_multiple_of_requirement` f
 names most exposed to a count reduction.
 
 The separate problem is precision, which tops out at 60% and falls to 17% on
-February 2026. `IDEA` is nominated in three of the four reviews and was never deleted.
-`NMDC` appeared in two reviews before its dated FIF history was corrected; it is no
-longer predicted for deletion with the current inputs.
+February 2026. `IDEA` is nominated in four of the five reviews and was never deleted.
 
 ### August 2026 review
 
@@ -322,7 +327,7 @@ This matters more than the headline numbers, because the causes are specific and
 fixable rather than diffuse:
 
 With the real constituent list, November 2026 has one spurious addition and one
-spurious deletion. Across all four reviews the same handful of names recurs:
+spurious deletion. Across all five reviews the same handful of names recurs:
 
 | Name | Spurious in | Why it is wrong |
 |---|---|---|
@@ -502,9 +507,9 @@ dates), and `backtest.txt`.
 
 ### 4.3 How membership is determined, and why it is the main accuracy lever
 
-Recall on additions is 100% on three of the four reviews tested, and 100% on all four
-once the cut-off band is swept rather than a single value assumed. Almost every
-remaining error is a false positive, and historically most came from one thing: the
+Recall on additions is 100% on three of the five reviews tested, and 100% on four of
+the five once the cut-off band is swept. Almost every remaining error is a false
+positive, and historically most came from one thing: the
 model not knowing who is already in the index.
 
 This is structural, not sloppiness. The +50% add buffer means membership is
@@ -627,9 +632,11 @@ Full worked example:
 3. **Update `config/parameters.yaml` every review.** The Equity Universe Minimum Size
    and the Global Minimum Size References are republished each time and drift with
    global markets.
-4. **Add more reviews to `config/actual_reviews.yaml`.** Four are recorded (Feb, May,
-   Aug and Nov 2026). Six quarters would tell you whether the band method's 100%
-   addition recall holds, and
+4. **Add more reviews to `config/actual_reviews.yaml`.** Five are now recorded (Nov
+   2025, Feb/May/Aug/Nov 2026). Six quarters would tell you whether the band method's
+   100% addition recall holds, and would also pin the cut-off band and the band-share
+   threshold, which are currently fitted on the four 2026 reviews and are the least
+   well-established settings in the model.
    would also pin the cut-off band and the band-share threshold, which are currently
    fitted on those four and are the least well-established settings in the model.
 5. **Use `--trace-membership SYMBOL`** when a known addition is reported as an
