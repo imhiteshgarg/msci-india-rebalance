@@ -306,6 +306,7 @@ def assess_float_reliability(
     stale_months: float = 4.0,
     gap_low_pp: float = 25.0,
     gap_medium_pp: float = 15.0,
+    high_fif_lockin_exempt: float = 0.75,
 ) -> FloatReliability:
     """Flag securities whose free-float estimate cannot be trusted at this date.
 
@@ -335,11 +336,24 @@ def assess_float_reliability(
     level = "HIGH"
 
     if sec.months_since_listing < lockin_months:
-        reasons.append(
-            f"listed {sec.months_since_listing:.1f} months ago, inside the ~{lockin_months:.0f} "
-            "month IPO lock-in horizon, so reported float overstates MSCI's"
-        )
-        level = "LOW"
+        # High-float names (FIF ≥ 0.75) are unlikely to have meaningful lock-in:
+        # a corporate spinoff whose entire market cap is freely tradeable does not
+        # have locked pre-IPO investors in the same way a traditional IPO does.
+        # The EPI screen already applies this same exemption. For such names, flag
+        # the concern at MEDIUM rather than suppressing the prediction entirely.
+        if sec.fif >= high_fif_lockin_exempt:
+            level = "MEDIUM"
+            reasons.append(
+                f"listed {sec.months_since_listing:.1f} months ago (inside the ~{lockin_months:.0f} "
+                f"month IPO lock-in horizon), but FIF {sec.fif:.2f} >= {high_fif_lockin_exempt:.2f} "
+                "suggests minimal lock-in risk (e.g. corporate spinoff)"
+            )
+        else:
+            reasons.append(
+                f"listed {sec.months_since_listing:.1f} months ago, inside the ~{lockin_months:.0f} "
+                "month IPO lock-in horizon, so reported float overstates MSCI's"
+            )
+            level = "LOW"
 
     # The strategic gap is reported but never changes the confidence level, because
     # measurement showed it does not discriminate. At the May 2026 review Federal
@@ -785,3 +799,136 @@ def passes_equity_universe(sec: Security, th: Thresholds) -> bool:
     if sec.fot_3m_pct is not None and sec.fot_3m_pct < th.fot_3m_min:
         return False
     return True
+
+
+# ---------------------------------------------------------------------------
+# Segment Number of Companies management  (GIMI 3.1.4.2)
+# ---------------------------------------------------------------------------
+
+
+def segment_count_deletions(
+    investable: list["Security"],
+    proposed_constituents: set[str],
+    size_range: "SizeRange",
+    coverage_target: float = 0.85,
+    coverage_tolerance: float = 0.05,
+) -> list["Verdict"]:
+    """Force deletions when the proposed constituent set overshoots the coverage target.
+
+    GIMI 3.1.4.2: after the standard buffer tests have produced a proposed member
+    set, check whether the cumulative free-float coverage at rank = segment count
+    exceeds the Market Coverage Target Range (85% ± 5% = up to 90% for the Standard
+    Index). If it does, remove the smallest members until coverage is back inside.
+
+    This is the rule that caused May 2026 and Nov 2025 deletions of names well above
+    the size and FFMC buffer thresholds: MSCI added four to five names and then had to
+    remove the smallest members to keep the segment from overshooting 90% coverage.
+
+    Constraints from the methodology:
+    - Only members with full market cap below 1.0x the EM Standard GMSR reference
+      (the lower limit of the Upper Size Range Boundary Proximity Area) may be removed.
+    - Removal is capped at 20% of the initial segment count (with the first two members
+      always removable in small markets; not material for India with 160+ members).
+    - If a removal would drag coverage below the lower bound (80%), it is skipped
+      (footnote 22 to section 3.1.4.2).
+
+    Returns Verdict objects so the pipeline can account for them in the same way as
+    ordinary buffer-driven deletions.
+    """
+    if not investable or not proposed_constituents:
+        return []
+
+    # Sort investable universe by full market cap descending - this defines the rank
+    # ordering MSCI uses to compute coverage.
+    sorted_inv = sorted(investable, key=lambda s: -s.full_mcap_usd_mn)
+    total_ffmc = sum(s.ffmc_usd_mn for s in sorted_inv)
+    if total_ffmc <= 0:
+        return []
+
+    initial_n = len(proposed_constituents)
+    if initial_n == 0 or initial_n > len(sorted_inv):
+        return []
+
+    # Precompute cumulative FFMC for every rank once. cum_ffmcs[k] = sum of FFMC for
+    # the top k companies in the investable universe by full market cap.
+    # Coverage at rank k = cum_ffmcs[k] / total_ffmc.
+    cum_ffmcs: list[float] = [0.0]
+    for s in sorted_inv:
+        cum_ffmcs.append(cum_ffmcs[-1] + s.ffmc_usd_mn)
+
+    # Cumulative FFMC for the top initial_n companies in the investable universe.
+    # This is the coverage the proposed segment produces.
+    initial_coverage = cum_ffmcs[initial_n] / total_ffmc
+
+    max_coverage = coverage_target + coverage_tolerance   # 0.90 for Standard
+    min_coverage = coverage_target - coverage_tolerance   # 0.80 for Standard
+
+    if initial_coverage <= max_coverage:
+        return []  # within range, no company count management needed
+
+    # Need to reduce. Candidates: proposed members with full mcap below 1.0× the GMSR.
+    # Sort ascending by full mcap so we remove the smallest first.
+    gmsr_ref = size_range.reference           # 1.0x the EM Standard GMSR reference
+    removable = sorted(
+        [s for s in investable if s.symbol in proposed_constituents
+         and s.full_mcap_usd_mn < gmsr_ref],
+        key=lambda s: s.full_mcap_usd_mn,
+    )
+
+    if not removable:
+        return []
+
+    # Cap: no more than 20% of the initial segment count total.
+    max_removals = max(2, int(initial_n * 0.20))
+
+    forced: list[Verdict] = []
+    for sec in removable:
+        if len(forced) >= max_removals:
+            break
+
+        # New segment count after this removal.
+        new_n = initial_n - len(forced) - 1
+        if new_n < 0 or new_n >= len(cum_ffmcs):
+            break
+
+        # Coverage at rank new_n uses the precomputed array — this is the correct
+        # formula because it re-reads the cumulative FFMC at the new rank boundary,
+        # not an incremental subtraction that would be wrong when non-constituents
+        # occupy positions in the investable ranking.
+        coverage_after_removal = cum_ffmcs[new_n] / total_ffmc
+
+        # Footnote 22: do not remove if it overshoots the lower bound.
+        if coverage_after_removal < min_coverage:
+            break
+
+        c = sec.full_mcap_usd_mn
+        forced.append(
+            Verdict(
+                symbol=sec.symbol,
+                name=sec.name,
+                decision="DELETE",
+                checks=[
+                    Check(
+                        "Segment Number of Companies",
+                        False,
+                        f"coverage {initial_coverage:.1%} exceeds target maximum "
+                        f"{max_coverage:.0%}; removing smallest members to bring it "
+                        f"back into the [{min_coverage:.0%}, {max_coverage:.0%}] range "
+                        f"(GIMI 3.1.4.2)",
+                    )
+                ],
+                cutoff_usd_mn=c,
+                full_mcap_usd_mn=sec.full_mcap_usd_mn,
+                ffmc_usd_mn=sec.ffmc_usd_mn,
+                fif=sec.fif,
+                size_multiple=1.0,  # not applicable for this deletion path
+                ffmc_multiple=1.0,
+                blocking_reasons=["Segment Number of Companies"],
+                path="segment_count",
+            )
+        )
+
+        if coverage_after_removal <= max_coverage:
+            break  # coverage is now within the target range
+
+    return forced

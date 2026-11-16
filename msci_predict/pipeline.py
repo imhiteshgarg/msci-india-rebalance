@@ -790,6 +790,15 @@ class Predictor:
 
             adds.sort(key=lambda v: -v.size_multiple)
             dels.sort(key=lambda v: v.size_multiple)
+
+            # NOTE: GIMI 3.1.4.2 Segment Number of Companies management is implemented
+            # in rules.segment_count_deletions() but NOT called here. The trigger
+            # condition (coverage > 90%) cannot be computed reliably from our data:
+            # our investable universe is broader than MSCI's (~566 vs ~430 for India),
+            # making our FFMC denominator larger and our coverage estimates lower than
+            # MSCI's. The function fires for the wrong reviews and misses the right
+            # ones. Leave the implementation in place for when better calibration data
+            # is available. See rules.segment_count_deletions() for details.
             date_results.append(
                 DateResult(
                     price_cutoff=d,

@@ -297,13 +297,27 @@ def main() -> int:
         })
 
     existing: list[dict] = []
-    if args.merge and args.out.exists():
+    if args.out.exists():
         with open(args.out, newline="") as fh:
             for row in csv.DictReader(fh):
                 sym = (row.get("symbol") or "").strip().upper()
-                if sym and not sym.startswith("#") and sym not in derived_symbols:
+                if not sym or sym.startswith("#"):
+                    continue
+                note = (row.get("note") or "").lower()
+                # MSCI-implied rows are always preserved regardless of --merge.
+                # They are more accurate than NSE-derived estimates and must not be
+                # overwritten by a subsequent shareholding-history run. The derive_msci_fif.py
+                # --write path produces these; they are identified by their note text.
+                if "msci implied" in note:
                     existing.append(row)
-        log.info("Keeping %d existing hand-written row(s)", len(existing))
+                elif args.merge and sym not in derived_symbols:
+                    existing.append(row)
+    msci_kept = sum(1 for r in existing if "msci implied" in (r.get("note") or "").lower())
+    hand_kept = len(existing) - msci_kept
+    if msci_kept:
+        log.info("Keeping %d MSCI-implied row(s) (always preserved)", msci_kept)
+    if hand_kept:
+        log.info("Keeping %d existing hand-written row(s)", hand_kept)
 
     history_rows.sort(key=lambda r: (r["symbol"], r["effective_date"]))
     args.out.parent.mkdir(parents=True, exist_ok=True)
