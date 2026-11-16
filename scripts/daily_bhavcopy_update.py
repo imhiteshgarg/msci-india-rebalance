@@ -149,6 +149,13 @@ def main() -> int:
         rows.append((now, d.isoformat(), weekday, outcome, detail))
         print(f"  {d.isoformat()} ({weekday})  {outcome:<15} {detail}")
 
+    if not rows:
+        # Every run leaves at least one row, even one that found only weekends, so a
+        # `git pull` always shows what the latest run did rather than silently
+        # nothing. (The start > end branch above logs its own up-to-date row.)
+        rows.append((now, end.isoformat(), end.strftime("%a"), "up-to-date",
+                     f"range {start}..{end}: {counts['weekend']} weekend, no trading day"))
+
     _append_log(args.log, rows)
 
     print()

@@ -54,7 +54,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add cache/bhavcopy/*.csv logs/daily_bhavcopy_update.csv
+          # Stage each path independently and tolerantly: a single `git add` with a
+          # pathspec that matches nothing (e.g. the log before its first run) fails
+          # the whole command under `bash -e`, which is what broke the first run.
+          git add cache/bhavcopy 2>/dev/null || true
+          git add logs 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
