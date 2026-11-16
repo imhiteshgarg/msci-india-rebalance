@@ -104,6 +104,30 @@ class SecurityStatic:
 # ---------------------------------------------------------------------------
 
 
+def _recorded_request_end(end: date, prev_end: str | None, px: pd.DataFrame) -> str:
+    """The `requested_end` value to persist in the panel metadata.
+
+    Cache freshness is judged against the range previously *requested* rather than
+    against what came back, and for the start of the range that is deliberate: a
+    stock listed in 2024 will never have 2022 rows, so comparing the needed start
+    against the earliest row present marks the cache permanently incomplete and
+    refetches the world on every run.
+
+    The end of the range is a different case, because no symbol can have rows after
+    the last trading day - that is a global bound, not a per-symbol one. Recording a
+    requested end beyond the data lets the cache claim coverage it does not have,
+    which is how one reach for a future review window left the panel asserting it
+    held prices months past its final row: every later run read that, judged itself
+    fresh, returned the stale panel, and the screen then found no candidate price
+    cut-off date with any prices on it. So the recorded end is capped at the last
+    row actually held, which also repairs a metadata file already overstating it.
+    """
+    recorded = max(end.isoformat(), prev_end) if prev_end else end.isoformat()
+    if not px.empty:
+        recorded = min(recorded, px.index.max().date().isoformat())
+    return recorded
+
+
 class DataStore:
     """Fetches and caches everything the pipeline needs."""
 
@@ -523,7 +547,7 @@ class DataStore:
         prev_end = meta.get("requested_end")
         self._panel_meta_path.write_text(json.dumps({
             "requested_start": min(start.isoformat(), prev_start) if prev_start else start.isoformat(),
-            "requested_end": max(end.isoformat(), prev_end) if prev_end else end.isoformat(),
+            "requested_end": _recorded_request_end(end, prev_end, px),
             "symbols": sorted(set(px.columns)),
             "rows": int(px.shape[0]),
         }, indent=0))
@@ -762,7 +786,7 @@ def _store_panels(
     prev_start, prev_end = meta.get("requested_start"), meta.get("requested_end")
     store._panel_meta_path.write_text(json.dumps({
         "requested_start": min(start.isoformat(), prev_start) if prev_start else start.isoformat(),
-        "requested_end": max(end.isoformat(), prev_end) if prev_end else end.isoformat(),
+        "requested_end": _recorded_request_end(end, prev_end, px),
         "symbols": sorted(set(px.columns)),
         "rows": int(px.shape[0]),
         "source": store.price_source,

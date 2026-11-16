@@ -100,6 +100,24 @@ class BhavcopySource:
         return self._session
 
     def _record_holiday(self, day: date) -> None:
+        """Remember that NSE has no file for a date, so a rebuild stops re-asking.
+
+        Only dates strictly in the past are recorded, and that restriction is the
+        whole point. NSE answers a date that has not happened yet with exactly the
+        same 404 it gives a genuine exchange holiday - verified against both - so
+        there is no way to tell them apart from the response alone. Recording the
+        future therefore blacklists it permanently: a forward-looking run that
+        reached for the next review's price window wrote every weekday of it in
+        here, and because `fetch_day` short-circuits on this set before issuing any
+        request, not even --refresh could recover those dates.
+
+        Today is excluded as well as the future, because NSE publishes the day's
+        bhavcopy after the close. A run earlier in the session must not conclude the
+        market was shut.
+        """
+        if day >= date.today():
+            log.debug("Not recording %s as a holiday: it is not in the past yet", day)
+            return
         self._holidays.add(day.isoformat())
         self._holiday_marker.write_text("\n".join(sorted(self._holidays)))
 
@@ -108,6 +126,10 @@ class BhavcopySource:
 
     def fetch_day(self, day: date, retries: int = 3) -> DayData | None:
         """One trading day, or None when the market was closed."""
+        if day > date.today():
+            # No file can exist for a date that has not happened. Skip without
+            # recording anything, so the date is tried again once it arrives.
+            return None
         if day.isoformat() in self._holidays:
             return None
         path = self._path(day)
@@ -127,7 +149,9 @@ class BhavcopySource:
                     time.sleep(2 * attempt)
                     continue
                 if resp.status_code == 404 or resp.content[:4] != b"SYMB":
-                    # Weekend or exchange holiday.
+                    # A 404 is how NSE reports an exchange holiday. _record_holiday
+                    # decides whether the date is old enough for that to be a
+                    # permanent fact.
                     self._record_holiday(day)
                     return None
                 text = resp.text
