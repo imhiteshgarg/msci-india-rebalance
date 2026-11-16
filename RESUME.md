@@ -5,9 +5,14 @@ ceremony — it is what caught the bugs described at the end.
 
 ## Verified results
 
-Three reviews, each with its own MSCI parameters, membership rolled back from INDA
+Four reviews, each with its own MSCI parameters, membership rolled back from INDA
 through MSCI's published change lists, dated free-float series, MEDIUM confidence bar,
 6-of-10 price cut-off dates. Every figure reproduced on a second run.
+
+**Re-measured after the phantom trading day fix** (see below). The single-cut-off
+precision figures in the table below are higher than this file previously recorded,
+and that is not the fix: every number was reproduced on the pre-fix panel and came out
+identical. The old row understated precision for May, August and November.
 
 ### Single assumed cut-off vs a cut-off band
 
@@ -24,15 +29,22 @@ So rather than guess one value, run the screen across the plausible band
 | EM GMSR (USD mn) | 7,599 | 7,874 | 8,138 | 8,686 | |
 | Optimal cut-off | 5,400 | 5,000 | 6,300 | 5,600 | |
 | as a multiple of GMSR | 0.711 | 0.635 | 0.774 | 0.645 | |
-| **Precision, one assumed cut-off** | 20% | 40% | 36% | 57% | 38% |
-| **Precision, band at 40% share** | **25%** | **50%** | **57%** | **80%** | **53%** |
+| **Recall, one assumed cut-off** | **50%** | 100% | 100% | 100% | |
+| **Precision, one assumed cut-off** | 20% | 57% | 67% | 80% | 56% |
+| **Precision, band at 40% share** | **20%** | **50%** | **50%** | **80%** | **50%** |
 | Recall, band at 40% share | 100% | 100% | 100% | 100% | |
 
-The threshold has to be **40% of the band, not half or more.** An earlier draft of this
-file recommended 5-of-9 on the strength of three reviews. February 2026 refuted it: at
-5-of-10 its recall is 50%, because L&T Finance - which MSCI did add - clears only 4 of
-10 cut-offs. Three reviews were not enough to fix the parameter, which is the same
-lesson as the cut-off itself.
+**Recall is not 100% at a single assumed cut-off.** February 2026 comes out at 50%,
+because L&T Finance - which MSCI did add - clears only 5 of the 10 cut-offs in the
+band and none of the 10 price cut-off dates at USD 5,400 mn. The 100% recall this
+project reports is a property of the *band* method, not of a single cut-off, and the
+two were conflated in earlier drafts of this file. Quote the band row when claiming
+full recall.
+
+The threshold has to be **40% of the band, not half or more.** An earlier draft
+recommended 5-of-9 on the strength of three reviews, and February 2026 refuted it.
+Measured across all four, 40% is the highest threshold that keeps full recall
+everywhere: May 2026 needs 4-of-10 and loses recall at 5-of-10.
 
 Demanding survival of the *entire* band is worse still. It reaches 100% precision on
 November 2026 and collapses to 25% recall on May 2026.
@@ -42,7 +54,7 @@ November 2026 and collapses to 25% recall on May 2026.
 | | Feb 2026 | Nov 2026 |
 |---|---|---|
 | Months between the cut-off date and the float snapshot | ~10 | ~1 |
-| Precision at 40% band share | 25% | 80% |
+| Precision at 40% band share | 20% | 80% |
 
 Precision falls monotonically with that gap across all four reviews. It is the same
 model reading progressively staler capital structure onto older prices, which is why
@@ -67,13 +79,20 @@ company looks eligible sooner than it is.
 
 ### Deletions
 
-| Review | Delete recall at the optimal cut-off |
-|---|---|
-| May 2026 | 25% (1 of 4) |
-| Aug 2026 | **100%** (3 of 3) |
-| Nov 2026 | 100% (1 of 1) |
+| Review | Delete recall | Delete precision |
+|---|---|---|
+| Feb 2026 | **100%** (1 of 1) | 17% (1 of 6) |
+| May 2026 | 25% (1 of 4) | 33% (1 of 3) |
+| Aug 2026 | **100%** (3 of 3) | 60% (3 of 5) |
+| Nov 2026 | **100%** (1 of 1) | 50% (1 of 2) |
 
-Better than the earlier 0%, but still unreliable, and the May result shows why: the
+Recall is now complete on three of the four reviews, which is a real improvement on
+the 0% this file first recorded, but precision is poor throughout: the model nominates
+two to six names to find one. `IDEA` is a spurious deletion in three of the four
+reviews and `NMDC` in two, and neither was ever deleted, which is the pattern to
+chase first.
+
+The May result shows the remaining structural gap: the
 Segment Number of Companies mechanism (GIMI 3.1.4.2, Appendix X) is not implemented,
 so deletions driven by company-count management rather than the buffer are invisible.
 A predicted deletion means something; an absence of them means nothing.
@@ -102,9 +121,13 @@ float, which have no free alternative, and remains selectable with
 Bhavcopy does not publish a split-adjusted series. It is reconstructed from the file
 itself: NSE restates `PREV_CLOSE` for corporate actions, so `PREV_CLOSE(t) /
 CLOSE(t-1)` is 1.0 on an ordinary day and equals the capital-change factor across a
-split or bonus. 484 such changes were found across the panel. Only discontinuities
-above 12% count, so dividends are left alone — they move the price without changing
-the share count.
+split or bonus. **76** such changes exist across the panel. Only discontinuities above
+12% count, so dividends are left alone — they move the price without changing the
+share count.
+
+This file previously recorded 484. That number was an artefact: 408 of those 484 were
+manufactured by the phantom trading days described below, and vanished once the panel
+was rebuilt without them.
 
 **Dated free-float series, derived rather than hand-written.** NSE's shareholding
 pattern API gives quarterly promoter and public holding. 4,773 dated rows now cover
@@ -140,7 +163,45 @@ conservative rather than suspect. What would discriminate is where the estimate 
 `scripts/derive_msci_fif.py`. Leaving it in also did harm: it marked nearly every name
 MEDIUM, which made the HIGH bar useless.
 
-## Two bugs worth remembering
+## Four bugs worth remembering
+
+**NSE serves the previous session's file for a holiday URL.** Asking the archive for
+25 December 2025 returns HTTP 200 with 3,090 rows stamped `24-Dec-2025`. The loader
+accepted it, so the holiday entered the panel as a trading day carrying a duplicate of
+the day before. 51 of 1,152 cached files were like this, every one a known NSE holiday.
+
+The duplicated close was the harmless part. The date also landed in the Frequency of
+Trading denominator and double counted a session in the ATVR series, and worse, it
+corrupted the adjusted price series: `ratio(t) = PREV_CLOSE(t)/CLOSE(t-1)` is measured
+against the previous *row*, so a phantom row yields roughly the inverse of the prior
+day's return. Any symbol that moved more than the 12% threshold the day before a
+holiday acquired a spurious capital-change factor, which then propagated to every
+earlier date for that symbol. 445 of 3,557 symbols had distorted history, 32 of them
+by more than 50%, including Kotak Bank at 4.07x.
+
+`fetch_day` now checks the file's own `DATE1` against the date requested and drops a
+mismatch. The check runs after parsing rather than at download, so files already in
+the cache are validated too. Note that a normal run cannot repair this on its own:
+`_merge_panels` uses `combine_first`, so phantom rows survive any rebuild and the
+panel had to be replaced explicitly.
+
+Measured effect on accuracy: **none.** Liquidity figures move 4-5% (12-month ATVR for
+MCX 144.3% to 136.9%), the trading calendar drops from 1,152 days to 1,101, and no
+back-test decision on any of the four reviews changes. It matters for names near a
+threshold and for the membership replay, which reads historical market caps.
+
+**A reach into the future permanently blacklisted it.** NSE answers a date that has not
+happened with the same 404 it gives a genuine holiday, and `_record_holiday` wrote both
+into `_holidays.txt` as permanent facts. One forward-looking run recorded all 55
+weekdays from 2026-11-16 to 2027-01-29, including every candidate price cut-off date
+for the February 2027 review. Because `fetch_day` short-circuits on that set before
+issuing any request, `--refresh` could not recover them either. Holidays are now only
+recorded for dates strictly in the past, and today is excluded as well, since the
+bhavcopy is published after the close.
+
+Alongside it, `price_panel_meta.json` was left claiming a `requested_end` of
+2027-01-29 against a panel ending 2026-11-13, so every later run judged itself fresh
+and returned a stale panel. The recorded end is now capped at the last row held.
 
 **The price cache was replaced rather than merged.** A back-test fetching data ending
 30 April drops every symbol listed later; writing that over the full panel shrank the
@@ -154,10 +215,17 @@ derived cut-off moved with it, and identical commands gave different predictions
 there is per-batch backoff and a hard floor: below `--min-price-coverage` (default 70%)
 the run aborts and leaves the cache untouched.
 
-The second is the one to remember. A tool that refuses to answer is fine. One that
-answers plausibly from a third of the market is not, because the cut-off is derived
-from cumulative coverage of the whole universe and a missing third moves it by more
-than the buffers that decide membership.
+The throttled-fetch one is the one to remember. A tool that refuses to answer is fine.
+One that answers plausibly from a third of the market is not, because the cut-off is
+derived from cumulative coverage of the whole universe and a missing third moves it by
+more than the buffers that decide membership.
+
+The common thread across all four is that each cached a *guess* as a fact — a holiday
+that was only an unpublished future, a substituted file taken for the day requested, a
+requested range taken for a delivered one. The lesson is to validate what came back
+against what was asked for, and the corollary is that the numbers in this file are
+themselves only as good as their last re-measurement. Three of them were wrong until
+re-run.
 
 ## Open items
 
@@ -170,9 +238,17 @@ than the buffers that decide membership.
 - **Deletions remain under-predicted** because the Segment Number of Companies
   mechanism (GIMI 3.1.4.2, Appendix X) is not implemented. A predicted deletion means
   something; an absence of predicted deletions means nothing.
-- **Only two reviews are verified.** Feb and Aug 2026 are recorded in
-  `config/actual_reviews.yaml` and can be scored once historical membership is derived
-  for them.
+- **All four recorded reviews are now scored.** Feb, May, Aug and Nov 2026 each have a
+  membership snapshot and a parameters snapshot, and all four were re-measured after
+  the phantom-day fix. Four is still a small sample for fitting the cut-off band and
+  the 40% band-share threshold; those two settings remain the least well-established
+  part of the model.
+- **February 2026 recall is 50% at a single cut-off**, not 100%. L&T Finance clears
+  none of the ten price cut-off dates at USD 5,400 mn and only 5 of 10 cut-offs in the
+  band. Full recall there depends on the band method.
+- **Deletion precision is poor** even where recall is complete: 17% on Feb 2026, 33%
+  on May, 60% on Aug, 50% on Nov. `IDEA` is spurious in three of the four reviews and
+  `NMDC` in two, which is the cheapest thread to pull.
 
 ## Next commands
 
