@@ -38,7 +38,7 @@ import io
 import logging
 import time
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import numpy as np
@@ -60,6 +60,35 @@ EQUITY_SERIES = {"EQ", "BE", "BZ"}
 # than a dividend. Indian splits and bonuses are rarely smaller; dividends rarely
 # larger, outside occasional specials.
 CAPITAL_CHANGE_THRESHOLD = 0.12
+
+
+def _file_trade_date(text: str) -> date | None:
+    """The trade date the bhavcopy file reports in its own DATE1 column.
+
+    Needed because NSE's archive answers a holiday URL with the *previous*
+    session's file rather than a 404: asking for 25 December 2025 returns 3,090
+    rows stamped 24-Dec-2025. Accepting that inserts a phantom trading day. The
+    close is only a duplicate, which is harmless, but the date also lands in the
+    Frequency of Trading denominator (GIMI 2.2.5) and double counts a session in
+    the ATVR traded-value series, so both liquidity screens read high.
+
+    Dropping the row instead is correct as well as simpler: every point-in-time
+    lookup in the pipeline takes the last close on or before the date it is asked
+    about, so a missing holiday resolves to the previous session's close, which is
+    what MSCI does for a market that was shut.
+
+    Returns None when the column is absent or unparsable, in which case the caller
+    keeps the file - the format changing is not evidence the data is for the wrong
+    day.
+    """
+    first = next(csv.DictReader(io.StringIO(text)), None)
+    if first is None:
+        return None
+    raw = next((v for k, v in first.items() if (k or "").strip() == "DATE1"), "")
+    try:
+        return datetime.strptime((raw or "").strip(), "%d-%b-%Y").date()
+    except ValueError:
+        return None
 
 
 @dataclass
@@ -160,6 +189,16 @@ class BhavcopySource:
             if text is None:
                 log.warning("Could not fetch bhavcopy for %s", day)
                 return None
+
+        # The file has to be for the day that was asked for. Checked here rather
+        # than at download, so a file already sitting in the cache is validated too.
+        reported = _file_trade_date(text)
+        if reported is not None and reported != day:
+            log.debug(
+                "%s: bhavcopy reports trade date %s, so the market was shut; dropping",
+                day, reported,
+            )
+            return None
 
         closes, volumes, prev, turnover = {}, {}, {}, {}
         for row in csv.DictReader(io.StringIO(text)):
