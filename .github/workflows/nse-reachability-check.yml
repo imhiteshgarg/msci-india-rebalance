@@ -1,0 +1,30 @@
+name: NSE reachability check
+
+# Manual, one-off de-risking probe - NOT the daily cache job. It fetches nothing into
+# the cache, writes nothing, and needs no secrets. Its only job is to confirm that
+# GitHub's runners can reach NSE's bhavcopy archive before we invest in the daily
+# updater. Trigger it from the Actions tab with "Run workflow".
+#
+# Read the run log: "VERDICT: WORKING" means we can build the daily job as planned.
+# "VERDICT: BLOCKED" means the runner IPs are refused and we need a proxy or an
+# India-based self-hosted runner instead.
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Only curl_cffi is needed; the probe is standalone and does not import the
+      # msci_predict package, so pandas/numpy are not required here.
+      - name: Install curl_cffi
+        run: pip install "curl_cffi>=0.6"
+
+      - name: Probe NSE bhavcopy archive
+        run: python scripts/nse_reachability_check.py --days 12
