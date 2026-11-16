@@ -19,10 +19,9 @@ on:
     - cron: "30 2 * * 2-6"
   workflow_dispatch:
 
-# One run at a time, so two never race to push.
-concurrency:
-  group: daily-bhavcopy
-  cancel-in-progress: false
+# No concurrency guard. Overlapping runs are made safe in the commit step (it rebases
+# onto the remote before pushing) rather than forbidden, so a run can never be stalled
+# waiting behind another - which is what a stuck/ghost queued run would otherwise do.
 
 # Needed so the job can commit the new day files and the log back to the repo.
 permissions:
@@ -61,7 +60,23 @@ jobs:
           git add logs 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "No changes to commit."
-          else
-            git commit -m "Daily bhavcopy update ($(date -u +%Y-%m-%d))"
-            git push
+            exit 0
           fi
+          git commit -m "Daily bhavcopy update ($(date -u +%Y-%m-%d))"
+          # Race-proof push: rebase our commit onto whatever is already on the branch,
+          # then push. Retried because another run (or a manual push) could land a
+          # commit between our fetch and our push. This is what replaces the old
+          # concurrency guard - concurrent runs rebase past each other instead of one
+          # failing on a non-fast-forward, and no run waits in a queue behind another.
+          branch="${{ github.ref_name }}"
+          for attempt in 1 2 3; do
+            git rebase --abort 2>/dev/null || true   # clear any half-done rebase from a prior attempt
+            if git pull --rebase origin "$branch" && git push origin "HEAD:$branch"; then
+              echo "Pushed on attempt $attempt."
+              exit 0
+            fi
+            echo "Push attempt $attempt failed (someone else pushed?); retrying..."
+            sleep 5
+          done
+          echo "Could not push after 3 attempts."
+          exit 1
