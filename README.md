@@ -17,7 +17,7 @@ theirs.
 ## 1. How MSCI actually decides
 
 Everything below traces to the
-[MSCI Global Investable Market Indexes (GIMI) Methodology, August 2026](https://www.msci.com/eqb/methodology/meth_docs/MSCI_GIMIMethodology_Aug2026.pdf)
+[MSCI Global Investable Market Indexes (GIMI) Methodology, November 2026](https://www.msci.com/eqb/methodology/meth_docs/MSCI_GIMIMethodology_Nov2026.pdf)
 and the [MSCI Liquidity Data Methodology, May 2025](https://www.msci.com/documents/10199/995265d3-adce-42ce-dad7-a1696b3f800a).
 Section numbers are cited in the code so each rule can be re-verified when MSCI
 revises the book. *Content from MSCI documents has been paraphrased for compliance
@@ -847,7 +847,7 @@ research/                           the source PDFs and extracted text
 
 Primary (public domain, cited inline in the code):
 
-- [MSCI GIMI Methodology, August 2026](https://www.msci.com/eqb/methodology/meth_docs/MSCI_GIMIMethodology_Aug2026.pdf)
+- [MSCI GIMI Methodology, November 2026](https://www.msci.com/eqb/methodology/meth_docs/MSCI_GIMIMethodology_Nov2026.pdf)
 - [MSCI Liquidity Data Methodology, May 2025](https://www.msci.com/documents/10199/995265d3-adce-42ce-dad7-a1696b3f800a)
 - [MSCI Index Calculation Methodology](https://www.msci.com/eqb/methodology/meth_docs/MSCI_Index_Calculation_Methodology_20240301.pdf)
 

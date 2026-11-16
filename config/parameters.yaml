@@ -1,11 +1,11 @@
 # MSCI GIMI parameters used by the India Standard Index prediction model.
 #
 # Every number here traces to the MSCI Global Investable Market Indexes (GIMI)
-# Methodology, August 2026 edition, or the MSCI Liquidity Data Methodology (May 2025).
+# Methodology, November 2026 edition, or the MSCI Liquidity Data Methodology (May 2025).
 # Section references are given so each value can be re-verified when MSCI updates.
 #
 # Sources:
-#   https://www.msci.com/eqb/methodology/meth_docs/MSCI_GIMIMethodology_Aug2026.pdf
+#   https://www.msci.com/eqb/methodology/meth_docs/MSCI_GIMIMethodology_Nov2026.pdf
 #   https://www.msci.com/documents/10199/995265d3-adce-42ce-dad7-a1696b3f800a  (Liquidity Data)
 
 market:
