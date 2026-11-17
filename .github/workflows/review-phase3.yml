@@ -1,0 +1,87 @@
+name: Review Phase 3 — Authoritative prediction
+
+# Runs the morning after the last price window date, when all ten candidate
+# price cut-off dates have closes. Produces the headline prediction and the
+# cut-off band robustness table.
+#
+# QUARTERLY UPDATE REQUIRED:
+#   Change the cron date to the morning after the last price window day.
+#   Feb 2027: Jan 30  → "30 2 30 1 *"
+#   May 2027: May 1   → "30 2 1 5 *"
+#   Aug 2027: Jul 31  → "30 2 31 7 *"
+#   Nov 2027: Oct 30  → "30 2 30 10 *"
+#
+# The cut-off is read automatically from out/<review>/phase1_state.json written
+# by Phase 1. Override it with the cutoff_usd_mn input if needed.
+#
+# --refresh fetches fresh share counts (20-30 min). Prices are already in the
+# cache from the daily bhavcopy action, so price fetching is fast.
+on:
+  schedule:
+    - cron: "30 2 30 1 *"  # Jan 30, 08:00 IST — UPDATE EACH QUARTER
+  workflow_dispatch:
+    inputs:
+      review:
+        description: "Review label (e.g. 2027-02)"
+        default: "2027-02"
+      cutoff_usd_mn:
+        description: "Override cut-off (USD mn). Leave blank to use Phase 1 state."
+        default: ""
+      no_refresh:
+        description: "Skip share-count refresh (faster but less current)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Rebuild price panels from committed day files
+        run: python scripts/hydrate_panels.py
+
+      - name: Run Phase 3 authoritative prediction
+        run: |
+          args=""
+          if [ -n "${{ github.event.inputs.cutoff_usd_mn }}" ]; then
+            args="--cutoff-usd-mn ${{ github.event.inputs.cutoff_usd_mn }}"
+          fi
+          if [ "${{ github.event.inputs.no_refresh }}" = "true" ]; then
+            args="$args --no-refresh"
+          fi
+          python scripts/phase3_predict.py \
+            --review "${{ github.event.inputs.review || '2027-02' }}" \
+            $args
+
+      - name: Commit prediction results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add out/
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Phase 3 prediction — ${{ github.event.inputs.review || '2027-02' }} ($(date -u +%Y-%m-%d))"
+          branch="${{ github.ref_name }}"
+          for attempt in 1 2 3; do
+            git rebase --abort 2>/dev/null || true
+            if git pull --rebase origin "$branch" && git push origin "HEAD:$branch"; then
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1

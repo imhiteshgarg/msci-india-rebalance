@@ -1,0 +1,69 @@
+========================================================================================
+MSCI India Standard Index - 2026-08 QIR prediction
+========================================================================================
+Equity Universe cut-off : 2026-05-29
+Liquidity cut-off       : 2026-06-30  (ATVR / Frequency of Trading frozen here)
+Price cut-off candidates: 2026-07-17 .. 2026-07-30  (10 of 10 screened)
+Announced               : 2026-08-12
+Effective               : 2026-08-28
+  note: Effective 2026-08-28 is 1 business day(s) before the end of the review month, so the price cut-off window is preponed by 1 day(s) per the footnote to GIMI 3.1.9.
+
+Universe screened       : 1314 securities
+Investable universe     : 598 companies
+Standard cut-off        : USD 6,162 - 6,343 mn (mean 6,238), mode=calibrated
+EM Global Min Size Range: USD 4,069 - 9,359 mn
+  raw 85%-coverage point: USD 5,001 mn, inside the range
+  min FFMC for Standard : USD 3,150 mn (50% of cut-off); low-FIF names need 1.8x that
+  add buffer (1.5x)     : USD 9,450 mn full market cap
+  delete buffer (0.67x) : USD 4,200 mn full market cap
+USD/INR at cut-off      : 88.72
+Constituent set         : 164 names, explicit list (164 names)
+
+----------------------------------------------------------------------------------------
+PREDICTED ADDITIONS to the India Standard Index
+----------------------------------------------------------------------------------------
+  Symbol         Dates   Conf   Mcap/cut FFMC/req    FIF  Path             Name
+  ADANIGREEN     10/10  100%       4.27     2.00  0.222  standard         Adani Green Energy Limited
+  ADANIENSOL     10/10  100%       3.75     1.76  0.232  standard         Adani Energy Solutions Limited
+  GROWW          10/10  100%       2.25     1.78  0.383  standard         Billionbrains Garage Ventures 
+  LENSKART       10/10  100%       1.74     1.46  0.435  standard         Lenskart Solutions Limited
+  HYUNDAI         9/10   90%       2.90     1.02  0.175  standard         Hyundai Motor India Limited
+  LAURUSLABS      9/10   90%       1.61     2.02  0.677  standard         Laurus Labs Limited
+  MEESHO          9/10   90%       1.55     1.12  0.359  standard         Meesho Limited
+
+----------------------------------------------------------------------------------------
+PREDICTED DELETIONS from the India Standard Index
+----------------------------------------------------------------------------------------
+  Symbol         Dates   Conf   Mcap/cut FFMC/req  Reason
+  ASTRAL         10/10  100%       0.70     0.61  Minimum FFMC (2/3 relief)
+  BALKRISIND     10/10  100%       0.72     0.60  Minimum FFMC (2/3 relief)
+  IDEA           10/10  100%       2.59     0.37  Minimum FFMC (2/3 relief)
+  SBICARD         4/10   40%       1.11     0.68  
+
+----------------------------------------------------------------------------------------
+FLAGGED - passed every MSCI rule, but the free-float estimate is not trustworthy
+----------------------------------------------------------------------------------------
+  These cleared the published screens and were withheld from the prediction
+  above because the float input driving them is unreliable. Historically this
+  is where the false positives live, so treat them as watchlist, not signal.
+
+  Symbol         Dates   Mcap/cut    FIF  Why the float is doubtful
+  VAML           10/10       3.19  0.437  listed 1.5 months ago, inside the ~6 month I
+  SBIFUNDS        8/10       2.08  0.437  listed 0.3 months ago, inside the ~6 month I
+
+----------------------------------------------------------------------------------------
+NEAR MISSES - cleared every screen except size, ranked by how close
+----------------------------------------------------------------------------------------
+  Symbol         Mcap/cut  Gap to 1.5x     FIF  Blocking
+  SWIGGY             1.39         8.0%   0.649  Size: +50% add buffer
+  COFORGE            1.38         8.3%   0.518  Size: +50% add buffer
+  LLOYDSME           2.03        15.6%   0.213  Minimum FFMC for Standard
+  ASTERDM            1.27        18.3%   0.765  Size: +50% add buffer
+  SAIL               1.25        20.1%   0.349  Minimum FFMC for Standard, Size:
+  BIOCON             1.25        20.4%   0.477  Size: +50% add buffer
+  KALYANKJIL         1.17        27.9%   0.371  Minimum FFMC for Standard, Size:
+  GLENMARK           1.11        35.6%   0.532  Size: +50% add buffer
+  UNOMINDA           1.21        37.8%   0.299  Minimum FFMC for Standard, Size:
+  NAM-INDIA          1.31        41.5%   0.269  Minimum FFMC for Standard, Size:
+  RBLBANK            1.05        42.8%   0.980  Size: +50% add buffer
+  RADICO             1.05        43.3%   0.573  Size: +50% add buffer

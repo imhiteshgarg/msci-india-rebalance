@@ -1,0 +1,36 @@
+========================================================================================
+BACK-TEST vs actual MSCI announcement - 2026-08
+========================================================================================
+Confidence threshold: a name counts as predicted if it cleared 6 or more of 10 candidate price cut-off dates.
+
+Standard additions
+  actual    : ADANIENSOL, GROWW, LAURUSLABS, LENSKART
+  predicted : ADANIGREEN, ADANIENSOL, GROWW, LENSKART, HYUNDAI, LAURUSLABS, MEESHO
+  correct   : ADANIENSOL, GROWW, LAURUSLABS, LENSKART
+  missed    : (none)
+  spurious  : ADANIGREEN, HYUNDAI, MEESHO
+  recall    : 100%   precision: 57%
+
+Standard deletions
+  actual    : ASTRAL, BALKRISIND, SBICARD
+  predicted : ASTRAL, BALKRISIND, IDEA
+  correct   : ASTRAL, BALKRISIND
+  missed    : SBICARD
+  spurious  : IDEA
+  recall    : 67%   precision: 67%
+
+----------------------------------------------------------------------------------------
+Per-name diagnosis
+----------------------------------------------------------------------------------------
+  Symbol         Dates   Mcap/cut FFMC/req   Member  Blocking
+  LENSKART       10/10       1.74     1.51       no  none
+  ADANIGREEN     10/10       4.27     1.90       no  none
+  BALKRISIND     10/10       0.72     0.60      yes  Minimum FFMC (2/3 relief)
+  IDEA           10/10       2.59     0.36      yes  Minimum FFMC (2/3 relief)
+  ASTRAL         10/10       0.70     0.64      yes  Minimum FFMC (2/3 relief)
+  GROWW          10/10       2.25     1.72       no  none
+  ADANIENSOL     10/10       3.75     1.74       no  none
+  HYUNDAI         9/10       2.90     1.02       no  Minimum FFMC for Standard
+  MEESHO          9/10       1.55     1.11       no  Size: +50% add buffer
+  LAURUSLABS      9/10       1.61     2.18       no  Size: +50% add buffer
+  SBICARD         4/10       1.11     0.67      yes  Minimum FFMC (2/3 relief)

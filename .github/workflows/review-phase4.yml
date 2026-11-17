@@ -1,0 +1,120 @@
+name: Review Phase 4 — Score prediction
+
+# MANUAL TRIGGER ONLY — cannot be scheduled because it requires a human step:
+# merging the MSCI announcement into config/actual_reviews.yaml.
+#
+# Workflow:
+#   1. Trigger this workflow manually from the Actions tab.
+#   2. The import step runs and prints the YAML to the Actions log.
+#   3. The workflow PAUSES and waits for you to merge the printed YAML into
+#      config/actual_reviews.yaml, commit, and push.
+#   4. Re-trigger (or the job resumes if implemented with a manual approval gate).
+#
+# Because GitHub Actions cannot pause for a file edit, this workflow does the
+# import and scoring in TWO separate manual runs:
+#   Run 1: "import"  — prints the YAML to the log. You merge it and push.
+#   Run 2: "score"   — scores the prediction, derives the constituent snapshot.
+#
+# Select the step via the step input below.
+on:
+  workflow_dispatch:
+    inputs:
+      review:
+        description: "Review label (e.g. 2027-02)"
+        default: "2027-02"
+      step:
+        description: "Which step to run"
+        type: choice
+        options:
+          - import    # Step 1: print the YAML to merge
+          - score     # Step 2: run after you've merged the YAML
+        default: import
+      cutoff_usd_mn:
+        description: "Cut-off used for scoring (USD mn, leave blank to use Phase 1 state)"
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # --- Step 1: Import the official MSCI result ---
+      - name: Import MSCI change list (Step 1 — print YAML to merge)
+        if: github.event.inputs.step == 'import'
+        run: |
+          # Derive the MSCI tag from the review label: 2027-02 → Feb27
+          python - <<'PY'
+          import sys
+          from msci_predict.calendar_rules import parse_review_label
+          year, month = parse_review_label("${{ github.event.inputs.review }}")
+          abbr = {2: "Feb", 5: "May", 8: "Aug", 11: "Nov"}
+          tag = f"{abbr[month]}{str(year)[2:]}"
+          print(f"MSCI_TAG={tag}", flush=True)
+          with open("$GITHUB_ENV", "a") as f:
+              f.write(f"MSCI_TAG={tag}\n")
+          PY
+          python scripts/import_msci_changes.py --reviews "$MSCI_TAG"
+          echo ""
+          echo "=================================================="
+          echo "  NEXT STEP:"
+          echo "  Copy the YAML block above into config/actual_reviews.yaml"
+          echo "  under the 'reviews:' key, then commit and push."
+          echo "  Then re-trigger this workflow with step = 'score'."
+          echo "=================================================="
+
+      # --- Step 2: Score the prediction ---
+      - name: Rebuild price panels
+        if: github.event.inputs.step == 'score'
+        run: python scripts/hydrate_panels.py
+
+      - name: Score and derive membership snapshot (Step 2)
+        if: github.event.inputs.step == 'score'
+        run: |
+          # Read cut-off from Phase 1 state if not overridden
+          CUTOFF="${{ github.event.inputs.cutoff_usd_mn }}"
+          if [ -z "$CUTOFF" ]; then
+            CUTOFF=$(python - <<'PY'
+          import json, pathlib
+          state = pathlib.Path("out/${{ github.event.inputs.review }}/phase1_state.json")
+          print(json.loads(state.read_text())["cutoff_usd_mn"] if state.exists() else 5600)
+          PY
+            )
+          fi
+          python scripts/phase4_score.py \
+            --review "${{ github.event.inputs.review }}" \
+            --cutoff-usd-mn "$CUTOFF" \
+            --skip-import
+
+      - name: Commit scoring results and constituent snapshot
+        if: github.event.inputs.step == 'score'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add out/
+          git add config/msci_india_constituents_*.csv
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Phase 4 score — ${{ github.event.inputs.review }} ($(date -u +%Y-%m-%d))"
+          branch="${{ github.ref_name }}"
+          for attempt in 1 2 3; do
+            git rebase --abort 2>/dev/null || true
+            if git pull --rebase origin "$branch" && git push origin "HEAD:$branch"; then
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1

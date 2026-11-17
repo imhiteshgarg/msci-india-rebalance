@@ -66,6 +66,8 @@ def main() -> int:
     ap.add_argument("--actuals", type=Path, default=ROOT / "config" / "actual_reviews.yaml")
     ap.add_argument("--float-limit", type=int, default=500,
                     help="Max symbols to refresh for shareholding history (default: 500)")
+    ap.add_argument("--cutoff-usd-mn", type=float, default=5600.0,
+                    help="Fallback cut-off if calibration cannot parse a recommendation (default: 5600)")
     ap.add_argument("--skip-calibrate", action="store_true",
                     help="Skip the cut-off calibration step (fastest option if you already know the level)")
     args = ap.parse_args()
@@ -131,11 +133,11 @@ def main() -> int:
     )
 
     # --- Step 5: Re-calibrate the size cut-off ---
+    # Run calibration and capture the recommended cut-off so Phase 3 can read it.
+    recommended_cutoff = args.cutoff_usd_mn if hasattr(args, "cutoff_usd_mn") else 5600.0
     if not args.skip_calibrate:
         prev = _latest_scored_review(args.actuals, args.review)
         if prev:
-            # Prefer a dated snapshot; fall back to the live files for the most
-            # recent review which hasn't been archived under its own name yet.
             prev_params = ROOT / "config" / f"parameters_{prev}.yaml"
             prev_cons   = ROOT / "config" / f"msci_india_constituents_{prev}.csv"
             if not prev_params.exists():
@@ -143,22 +145,50 @@ def main() -> int:
             if not prev_cons.exists():
                 prev_cons = args.constituents_file
             if prev_params.exists() and prev_cons.exists():
-                _run(
-                    ["scripts/calibrate_cutoff.py",
+                import io, contextlib
+                buf = io.StringIO()
+                result = subprocess.run(
+                    [sys.executable, "scripts/calibrate_cutoff.py",
                      "--review", prev,
                      "--params", str(prev_params),
                      "--constituents-file", str(prev_cons),
                      "--min-float-confidence", "MEDIUM",
                      "--min-dates", "6",
                      "--auto-band", "--robustness"],
-                    f"Re-calibrate size cut-off against {prev} (most recent scored review)",
+                    text=True,
                 )
+                # Parse the recommended level from the output.
+                # calibrate_cutoff prints: "Best combined F1 at USD X,XXX mn."
+                import re as _re
+                for line in (result.stdout or "").splitlines():
+                    m = _re.search(r"Best combined F1 at USD ([\d,]+) mn", line)
+                    if m:
+                        recommended_cutoff = float(m.group(1).replace(",", ""))
+                        break
             else:
                 print(f"\n  Skipping calibration: snapshot files for {prev} not found.")
         else:
             print("\n  Skipping calibration: no prior scored review found.")
     else:
         print("\n  --skip-calibrate: skipping cut-off calibration.")
+
+    # --- Write state file for Phase 3 to consume ---
+    import json as _json
+    from datetime import datetime as _dt
+    state_dir = ROOT / "out" / args.review.replace("/", "-")
+    state_dir.mkdir(parents=True, exist_ok=True)
+    state = {
+        "review": args.review,
+        "phase1_completed_at": _dt.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "cutoff_usd_mn": recommended_cutoff,
+        "params_file": str(args.params.relative_to(ROOT)),
+        "constituents_file": str(args.constituents_file.relative_to(ROOT)),
+        "note": "Edit cutoff_usd_mn here if calibration suggests a different level.",
+    }
+    state_path = state_dir / "phase1_state.json"
+    state_path.write_text(_json.dumps(state, indent=2))
+    print(f"\n✓ Wrote Phase 3 state: {state_path}")
+    print(f"  Recommended cut-off: USD {recommended_cutoff:,.0f} mn")
 
     print(f"\n{'='*70}")
     print("  Phase 1 complete.")

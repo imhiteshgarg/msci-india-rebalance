@@ -38,8 +38,8 @@ def main() -> int:
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     ap.add_argument("--review", default="2027-02")
-    ap.add_argument("--cutoff-usd-mn", type=float, default=5600.0,
-                    help="Size cut-off anchor from calibration (default: 5600)")
+    ap.add_argument("--cutoff-usd-mn", type=float, default=None,
+                    help="Size cut-off. Reads from out/<review>/phase1_state.json if not set.")
     ap.add_argument("--constituents-file", type=Path,
                     default=ROOT / "config" / "msci_india_constituents.csv")
     ap.add_argument("--min-float-confidence",
@@ -52,13 +52,26 @@ def main() -> int:
 
     refresh = [] if args.no_refresh else ["--refresh"]
 
+    # Read calibrated cut-off from Phase 1 state file if not explicitly set.
+    cutoff = args.cutoff_usd_mn
+    if cutoff is None:
+        import json as _json
+        state_path = ROOT / "out" / args.review.replace("/", "-") / "phase1_state.json"
+        if state_path.exists():
+            state = _json.loads(state_path.read_text())
+            cutoff = float(state.get("cutoff_usd_mn", 5600.0))
+            print(f"\nUsing cut-off USD {cutoff:,.0f} mn from Phase 1 state ({state_path.name})")
+        else:
+            cutoff = 5600.0
+            print(f"\nPhase 1 state not found; using default cut-off USD {cutoff:,.0f} mn")
+
     print(f"\nPhase 3 — authoritative prediction for {args.review}")
 
     # --- Run 1: headline prediction ---
     _run(
         ["run_prediction.py",
          "--review", args.review,
-         "--cutoff-usd-mn", str(args.cutoff_usd_mn),
+         "--cutoff-usd-mn", str(cutoff),
          "--constituents-file", str(args.constituents_file),
          "--min-float-confidence", args.min_float_confidence,
          "--min-dates", str(args.min_dates),
@@ -70,6 +83,7 @@ def main() -> int:
     _run(
         ["scripts/calibrate_cutoff.py",
          "--review", args.review,
+         "--cutoff-usd-mn", str(cutoff),
          "--constituents-file", str(args.constituents_file),
          "--min-float-confidence", args.min_float_confidence,
          "--min-dates", str(args.min_dates),

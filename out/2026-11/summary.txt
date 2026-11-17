@@ -1,0 +1,65 @@
+========================================================================================
+MSCI India Standard Index - 2026-11 SAIR prediction
+========================================================================================
+Equity Universe cut-off : 2026-08-31
+Liquidity cut-off       : 2026-09-30  (ATVR / Frequency of Trading frozen here)
+Price cut-off candidates: 2026-10-19 .. 2026-10-30  (10 of 10 screened)
+Announced               : 2026-11-11
+Effective               : 2026-11-30
+
+Universe screened       : 1314 securities
+Investable universe     : 569 companies
+Standard cut-off        : USD 5,456 - 5,600 mn (mean 5,500), mode=calibrated
+EM Global Min Size Range: USD 4,343 - 9,989 mn
+  raw 85%-coverage point: USD 4,884 mn, inside the range
+  min FFMC for Standard : USD 2,800 mn (50% of cut-off); low-FIF names need 1.8x that
+  add buffer (1.5x)     : USD 8,400 mn full market cap
+  delete buffer (0.67x) : USD 3,733 mn full market cap
+USD/INR at cut-off      : 88.72
+Constituent set         : 165 names, explicit list (165 names)
+
+----------------------------------------------------------------------------------------
+PREDICTED ADDITIONS to the India Standard Index
+----------------------------------------------------------------------------------------
+  Symbol         Dates   Conf   Mcap/cut FFMC/req    FIF  Path             Name
+  LICI           10/10  100%      10.08     1.14  0.100  low_fif          Life Insurance Corporation of 
+  ADANIGREEN     10/10  100%       4.29     1.82  0.207  standard         Adani Green Energy Limited
+  HYUNDAI        10/10  100%       3.17     1.14  0.175  standard         Hyundai Motor India Limited
+  MEESHO         10/10  100%       2.11     1.57  0.359  standard         Meesho Limited
+  COFORGE        10/10  100%       1.78     2.75  0.784  standard         Coforge Limited
+
+----------------------------------------------------------------------------------------
+PREDICTED DELETIONS from the India Standard Index
+----------------------------------------------------------------------------------------
+  Symbol         Dates   Conf   Mcap/cut FFMC/req  Reason
+  PIIND           8/10   80%       0.65     0.72  
+  ICICILIFE       6/10   60%       1.23     0.64  Minimum FFMC (2/3 relief), 12m ATV
+  VOLTAS          4/10   40%       0.67     1.00  
+
+----------------------------------------------------------------------------------------
+FLAGGED - passed every MSCI rule, but the free-float estimate is not trustworthy
+----------------------------------------------------------------------------------------
+  These cleared the published screens and were withheld from the prediction
+  above because the float input driving them is unreliable. Historically this
+  is where the false positives live, so treat them as watchlist, not signal.
+
+  Symbol         Dates   Mcap/cut    FIF  Why the float is doubtful
+  JPL             3/10      26.53  0.080  listed 0.1 months ago, inside the ~6 month I
+  SBIFUNDS        2/10       1.92  0.437  listed 3.3 months ago, inside the ~6 month I
+
+----------------------------------------------------------------------------------------
+NEAR MISSES - cleared every screen except size, ranked by how close
+----------------------------------------------------------------------------------------
+  Symbol         Mcap/cut  Gap to 1.5x     FIF  Blocking
+  LLOYDSME           2.07         3.3%   0.234  Minimum FFMC for Standard
+  ATHERENERG         1.40         6.9%   0.467  Size: +50% add buffer
+  SAIL               1.34        12.1%   0.349  Minimum FFMC for Standard, Size:
+  APARINDS           1.32        13.5%   0.446  Size: +50% add buffer
+  GLENMARK           1.31        14.9%   0.532  Size: +50% add buffer
+  WELCORP            1.24        20.7%   0.525  Size: +50% add buffer
+  UNOMINDA           1.26        25.6%   0.316  Minimum FFMC for Standard, Size:
+  ASTERDM            1.19        25.7%   0.630  Size: +50% add buffer
+  BIOCON             1.16        29.4%   0.512  Size: +50% add buffer
+  MOTILALOFS         1.14        31.2%   0.369  Minimum FFMC for Standard, Size:
+  SONACOMS           1.12        33.9%   0.638  Size: +50% add buffer
+  RADICO             1.10        36.1%   0.573  Size: +50% add buffer

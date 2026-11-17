@@ -1,0 +1,36 @@
+========================================================================================
+BACK-TEST vs actual MSCI announcement - 2026-02
+========================================================================================
+Confidence threshold: a name counts as predicted if it cleared 6 or more of 10 candidate price cut-off dates.
+
+Standard additions
+  actual    : ABCAPITAL, LTF
+  predicted : ANGELONE, ADANIGREEN, ADANIENSOL, ABCAPITAL, SWIGGY, COFORGE, LTF
+  correct   : ABCAPITAL, LTF
+  missed    : (none)
+  spurious  : ADANIENSOL, ADANIGREEN, ANGELONE, COFORGE, SWIGGY
+  recall    : 100%   precision: 29%
+
+Standard deletions
+  actual    : IRCTC
+  predicted : RVNL, IDEA, KALYANKJIL
+  correct   : (none)
+  missed    : IRCTC
+  spurious  : IDEA, KALYANKJIL, RVNL
+  recall    : 0%   precision: 0%
+
+----------------------------------------------------------------------------------------
+Per-name diagnosis
+----------------------------------------------------------------------------------------
+  Symbol         Dates   Mcap/cut FFMC/req   Member  Blocking
+  ANGELONE       10/10       4.89     4.56       no  none
+  SWIGGY         10/10       1.75     2.27       no  none
+  ABCAPITAL      10/10       1.98     1.24       no  none
+  RVNL           10/10       1.43     0.62      yes  Minimum FFMC (2/3 relief)
+  COFORGE        10/10       1.54     1.60       no  none
+  ADANIENSOL     10/10       2.23     1.19       no  none
+  ADANIGREEN     10/10       2.89     1.29       no  none
+  IDEA           10/10       2.29     0.32      yes  Minimum FFMC (2/3 relief)
+  KALYANKJIL      8/10       0.83     0.62      yes  Minimum FFMC (2/3 relief)
+  LTF             6/10       1.50     1.10       no  Size: +50% add buffer
+  IRCTC           3/10       1.03     0.67      yes  Minimum FFMC (2/3 relief)

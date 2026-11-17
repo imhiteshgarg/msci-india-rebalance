@@ -15,8 +15,8 @@ cache/bhavcopy/*
 !cache/bhavcopy/*.csv
 cache_smoke/
 
-# Generated reports.
-out/
+# Generated reports — tracked so GitHub Actions can commit predictions and scores.
+# out/
 
 # Methodology PDFs are large; the extracted .txt is what the code was written against.
 research/*.pdf

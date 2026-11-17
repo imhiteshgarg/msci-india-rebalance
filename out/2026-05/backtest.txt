@@ -1,0 +1,42 @@
+========================================================================================
+BACK-TEST vs actual MSCI announcement - 2026-05
+========================================================================================
+Confidence threshold: a name counts as predicted if it cleared 6 or more of 10 candidate price cut-off dates.
+
+Standard additions
+  actual    : FEDERALBNK, INDIANB, MCX, NATIONALUM
+  predicted : ADANIGREEN, INDIANB, NATIONALUM, SWIGGY, SAIL, MCX, FEDERALBNK
+  correct   : FEDERALBNK, INDIANB, MCX, NATIONALUM
+  missed    : (none)
+  spurious  : ADANIGREEN, SAIL, SWIGGY
+  recall    : 100%   precision: 57%
+
+Standard deletions
+  actual    : HYUNDAI, JUBLFOOD, KALYANKJIL, RVNL
+  predicted : RVNL, IDEA, LTM
+  correct   : RVNL
+  missed    : HYUNDAI, JUBLFOOD, KALYANKJIL
+  spurious  : IDEA, LTM
+  recall    : 25%   precision: 33%
+
+  Predicted and announced by MSCI, then withdrawn before taking effect: ADANIENSOL
+  Excluded from the counts above. The size and liquidity call matched MSCI's; the
+  reversal came from a regulatory overlay the model does not model.
+
+----------------------------------------------------------------------------------------
+Per-name diagnosis
+----------------------------------------------------------------------------------------
+  Symbol         Dates   Mcap/cut FFMC/req   Member  Blocking
+  LTM            10/10       2.99     1.55      yes  12m ATVR, 3m Frequency of Trading
+  MCX            10/10       1.63     2.77       no  none
+  IDEA           10/10       2.37     0.33      yes  Minimum FFMC (2/3 relief)
+  NATIONALUM     10/10       1.78     1.73       no  none
+  RVNL           10/10       1.42     0.62      yes  Minimum FFMC (2/3 relief)
+  INDIANB        10/10       2.74     1.10       no  none
+  FEDERALBNK     10/10       1.62     2.52       no  none
+  SWIGGY         10/10       1.66     2.16       no  none
+  ADANIGREEN     10/10       4.44     1.98       no  none
+  SAIL           10/10       1.66     1.16       no  none
+  JUBLFOOD        2/10       0.71     0.82      yes  Size: -33% delete buffer
+  HYUNDAI         0/10       3.36     1.18      yes  none
+  KALYANKJIL      0/10       0.96     0.71      yes  none

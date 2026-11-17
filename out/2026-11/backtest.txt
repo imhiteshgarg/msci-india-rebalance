@@ -1,0 +1,32 @@
+========================================================================================
+BACK-TEST vs actual MSCI announcement - 2026-11
+========================================================================================
+Confidence threshold: a name counts as predicted if it cleared 6 or more of 10 candidate price cut-off dates.
+
+Standard additions
+  actual    : COFORGE, LICI, ADANIGREEN, MEESHO
+  predicted : LICI, ADANIGREEN, HYUNDAI, MEESHO, COFORGE
+  correct   : ADANIGREEN, COFORGE, LICI, MEESHO
+  missed    : (none)
+  spurious  : HYUNDAI
+  recall    : 100%   precision: 80%
+
+Standard deletions
+  actual    : PIIND
+  predicted : PIIND, ICICILIFE
+  correct   : PIIND
+  missed    : (none)
+  spurious  : ICICILIFE
+  recall    : 100%   precision: 50%
+
+----------------------------------------------------------------------------------------
+Per-name diagnosis
+----------------------------------------------------------------------------------------
+  Symbol         Dates   Mcap/cut FFMC/req   Member  Blocking
+  LICI           10/10      10.08     1.12       no  none
+  HYUNDAI        10/10       3.17     1.11       no  none
+  COFORGE        10/10       1.78     2.79       no  none
+  ADANIGREEN     10/10       4.29     1.78       no  none
+  MEESHO         10/10       2.11     1.51       no  none
+  PIIND           8/10       0.65     0.69      yes  Size: -33% delete buffer
+  ICICILIFE       6/10       1.23     0.62      yes  12m ATVR, 3m ATVR, 3m Frequency of Tradi

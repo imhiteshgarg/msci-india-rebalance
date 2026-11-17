@@ -1,0 +1,42 @@
+========================================================================================
+BACK-TEST vs actual MSCI announcement - 2025-11
+========================================================================================
+Confidence threshold: a name counts as predicted if it cleared 6 or more of 10 candidate price cut-off dates.
+
+Standard additions
+  actual    : FORTIS, GVT&D, PAYTM, ENRIN
+  predicted : MCX, ANGELONE, ADANIGREEN, NUVAMA, ADANIENSOL, ENRIN, SWIGGY, CAMS, ABCAPITAL, PAYTM, FORTIS, COFORGE, GVT&D
+  correct   : ENRIN, FORTIS, GVT&D, PAYTM
+  missed    : (none)
+  spurious  : ABCAPITAL, ADANIENSOL, ADANIGREEN, ANGELONE, CAMS, COFORGE, MCX, NUVAMA, SWIGGY
+  recall    : 100%   precision: 31%
+
+Standard deletions
+  actual    : CONCOR, TATAELXSI
+  predicted : IDEA, TMPV
+  correct   : (none)
+  missed    : CONCOR, TATAELXSI
+  spurious  : IDEA, TMPV
+  recall    : 0%   precision: 0%
+
+----------------------------------------------------------------------------------------
+Per-name diagnosis
+----------------------------------------------------------------------------------------
+  Symbol         Dates   Mcap/cut FFMC/req   Member  Blocking
+  COFORGE        10/10       1.75     1.82       no  none
+  GVT&D          10/10       1.69     1.63       no  none
+  SWIGGY         10/10       2.47     3.16       no  none
+  CAMS           10/10       2.16     4.31       no  none
+  PAYTM          10/10       1.86     3.05       no  none
+  NUVAMA         10/10       2.98     2.21       no  none
+  FORTIS         10/10       1.78     2.31       no  none
+  ADANIENSOL     10/10       2.58     1.38       no  none
+  ABCAPITAL      10/10       1.90     1.19       no  none
+  ANGELONE       10/10       5.12     4.78       no  none
+  ADANIGREEN     10/10       3.89     1.73       no  none
+  IDEA           10/10       2.23     0.31      yes  Minimum FFMC (2/3 relief)
+  MCX            10/10       5.20     8.85       no  none
+  ENRIN          10/10       2.49     3.86       no  none
+  TMPV            6/10       3.37     3.87      yes  12m ATVR, 3m ATVR, 3m Frequency of Tradi
+  TATAELXSI       0/10       0.76     0.85      yes  none
+  CONCOR          0/10       0.92     0.83      yes  none

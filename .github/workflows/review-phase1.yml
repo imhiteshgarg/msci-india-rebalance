@@ -1,0 +1,84 @@
+name: Review Phase 1 — Setup
+
+# Runs once before the price window opens.
+# For the February 2027 review: Jan 11 at 08:00 IST (02:30 UTC).
+#
+# QUARTERLY UPDATE REQUIRED:
+#   Change the cron date below to the week before the new review's price window.
+#   Feb 2027: Jan 11  → "30 2 11 1 *"
+#   May 2027: Apr 10  → "30 2 10 4 *"
+#   Aug 2027: Jul 11  → "30 2 11 7 *"
+#   Nov 2027: Oct 11  → "30 2 11 10 *"
+#
+# MANUAL PREREQUISITE (cannot be automated):
+#   Download the INDA holdings file by hand BEFORE this workflow runs:
+#     https://www.ishares.com/us/products/239659/ishares-msci-india-etf
+#   Then run locally and commit:
+#     .venv/bin/python scripts/import_inda_holdings.py ~/Downloads/iShares-MSCI-India-ETF_fund.xls
+#     git add config/msci_india_constituents.csv && git commit -m "Refresh INDA holdings" && git push
+#
+# This workflow then handles: MSCI parameters, free-float history, MSCI-implied FIF,
+# and cut-off calibration. It writes out/<review>/phase1_state.json with the
+# recommended cut-off so Phase 3 can read it automatically.
+on:
+  schedule:
+    - cron: "30 2 11 1 *"  # Jan 11, 08:00 IST — UPDATE EACH QUARTER
+  workflow_dispatch:
+    inputs:
+      review:
+        description: "Review label (e.g. 2027-02)"
+        default: "2027-02"
+      cutoff_usd_mn:
+        description: "Fallback cut-off if calibration fails to parse (USD mn)"
+        default: "5600"
+
+permissions:
+  contents: write
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Phase 1 setup
+        run: |
+          python scripts/phase1_setup.py \
+            --review "${{ github.event.inputs.review || '2027-02' }}" \
+            --cutoff-usd-mn "${{ github.event.inputs.cutoff_usd_mn || '5600' }}" \
+            --float-limit 500
+
+      - name: Commit setup outputs
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add config/parameters.yaml
+          git add config/parameters_*.yaml
+          git add config/free_float_history.csv config/msci_implied_fif.csv
+          git add research/gimi_*.pdf 2>/dev/null || true
+          git add out/ 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Phase 1 setup — ${{ github.event.inputs.review || '2027-02' }} ($(date -u +%Y-%m-%d))"
+          branch="${{ github.ref_name }}"
+          for attempt in 1 2 3; do
+            git rebase --abort 2>/dev/null || true
+            if git pull --rebase origin "$branch" && git push origin "HEAD:$branch"; then
+              echo "Pushed on attempt $attempt."
+              exit 0
+            fi
+            echo "Retry $attempt..."
+            sleep 5
+          done
+          echo "Could not push after 3 attempts." && exit 1

@@ -1,0 +1,69 @@
+========================================================================================
+MSCI India Standard Index - 2026-02 QIR prediction
+========================================================================================
+Equity Universe cut-off : 2025-11-28
+Liquidity cut-off       : 2025-12-31  (ATVR / Frequency of Trading frozen here)
+Price cut-off candidates: 2026-01-19 .. 2026-01-30  (10 of 10 screened)
+Announced               : 2026-02-11
+Effective               : 2026-02-27
+
+Universe screened       : 1314 securities
+Investable universe     : 575 companies
+Standard cut-off        : USD 5,375 - 5,557 mn (mean 5,432), mode=calibrated
+EM Global Min Size Range: USD 3,800 - 8,739 mn
+  raw 85%-coverage point: USD 5,464 mn, inside the range
+  min FFMC for Standard : USD 2,700 mn (50% of cut-off); low-FIF names need 1.8x that
+  add buffer (1.5x)     : USD 8,100 mn full market cap
+  delete buffer (0.67x) : USD 3,600 mn full market cap
+USD/INR at cut-off      : 88.72
+Constituent set         : 163 names, explicit list (163 names)
+
+----------------------------------------------------------------------------------------
+PREDICTED ADDITIONS to the India Standard Index
+----------------------------------------------------------------------------------------
+  Symbol         Dates   Conf   Mcap/cut FFMC/req    FIF  Path             Name
+  ANGELONE       10/10  100%       4.89     4.67  0.466  standard         Angel One Limited
+  ADANIGREEN     10/10  100%       2.89     1.36  0.222  standard         Adani Green Energy Limited
+  ADANIENSOL     10/10  100%       2.23     1.20  0.267  standard         Adani Energy Solutions Limited
+  ABCAPITAL      10/10  100%       1.98     1.25  0.313  standard         Aditya Birla Capital Limited
+  SWIGGY         10/10  100%       1.75     2.30  0.649  standard         Swiggy Limited
+  COFORGE        10/10  100%       1.54     1.61  0.518  standard         Coforge Limited
+  LTF             6/10   60%       1.50     1.11  0.365  standard         L&T Finance Limited
+  INDIANB         4/10   40%       2.46     0.94  0.201  standard         Indian Bank
+  NATIONALUM      2/10   20%       1.45     1.34  0.487  standard         National Aluminium Company Lim
+
+----------------------------------------------------------------------------------------
+PREDICTED DELETIONS from the India Standard Index
+----------------------------------------------------------------------------------------
+  Symbol         Dates   Conf   Mcap/cut FFMC/req  Reason
+  RVNL           10/10  100%       1.43     0.61  Minimum FFMC (2/3 relief)
+  IDEA           10/10  100%       2.29     0.32  Minimum FFMC (2/3 relief)
+  KALYANKJIL      8/10   80%       0.83     0.72  
+  IRCTC           3/10   30%       1.03     0.67  
+
+----------------------------------------------------------------------------------------
+FLAGGED - passed every MSCI rule, but the free-float estimate is not trustworthy
+----------------------------------------------------------------------------------------
+  These cleared the published screens and were withheld from the prediction
+  above because the float input driving them is unreliable. Historically this
+  is where the false positives live, so treat them as watchlist, not signal.
+
+  Symbol         Dates   Mcap/cut    FIF  Why the float is doubtful
+  TMCV           10/10       3.52  0.552  listed 2.6 months ago, inside the ~6 month I
+
+----------------------------------------------------------------------------------------
+NEAR MISSES - cleared every screen except size, ranked by how close
+----------------------------------------------------------------------------------------
+  Symbol         Mcap/cut  Gap to 1.5x     FIF  Blocking
+  LTF                1.50         0.1%   0.365  Size: +50% add buffer
+  FEDERALBNK         1.48         1.1%   0.777  Size: +50% add buffer
+  NATIONALUM         1.48         1.5%   0.487  Size: +50% add buffer
+  MCX                1.34        11.7%   0.851  Size: +50% add buffer
+  SAIL               1.30        15.1%   0.349  Minimum FFMC for Standard, Size:
+  UNOMINDA           1.43        17.2%   0.299  Minimum FFMC for Standard, Size:
+  BIOCON             1.25        19.6%   0.477  Size: +50% add buffer
+  GLENMARK           1.19        26.3%   0.532  Size: +50% add buffer
+  MFSL               1.16        29.1%   0.740  Size: +50% add buffer
+  HINDCOPPER         1.38        29.5%   0.279  Minimum FFMC for Standard, Size:
+  CUPID              1.13        33.3%   0.352  Minimum FFMC for Standard, Size:
+  M&MFIN             1.09        37.7%   0.463  Size: +50% add buffer
