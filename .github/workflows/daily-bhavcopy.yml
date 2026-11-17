@@ -16,8 +16,7 @@ name: Daily bhavcopy update
 # no-op days succeed quietly and are recorded in logs/daily_bhavcopy_update.csv.
 on:
   schedule:
-    - cron: "30 2 * * 2-6"   # Primary: 08:00 IST Tue-Sat
-    - cron: "30 3 * * 2-6"   # Backup:  09:00 IST Tue-Sat — fires if the primary is missed
+    - cron: "37 2,3 * * 2-6"   # 08:07 , 09:07 IST Tue-Sat
   workflow_dispatch:
 
 # No concurrency guard. Overlapping runs are made safe in the commit step (it rebases
